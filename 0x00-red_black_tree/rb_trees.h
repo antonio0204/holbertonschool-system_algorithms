@@ -1,6 +1,9 @@
 #ifndef _RB_TREES_H_
 #define _RB_TREES_H_
 
+/* size_t */
+#include <stddef.h>
+
 /**
  * enum rb_color_e - Possible color of a Red-Black tree
  *
@@ -32,5 +35,27 @@ typedef struct rb_tree_s
 	struct rb_tree_s *left;
 	struct rb_tree_s *right;
 } rb_tree_t;
+
+/* 0. Red-Black - New node */
+rb_tree_t *rb_tree_node(rb_tree_t *parent, int value, rb_color_t color);
+
+/* 1. Red-Black - Is Red-Black */
+size_t max_size_t(size_t a, size_t b);
+size_t RBT_check_height(const rb_tree_t *tree);
+int RBT_check(const rb_tree_t *tree);
+int BST_check(const rb_tree_t *tree, int *prev);
+int rb_tree_is_valid(const rb_tree_t *tree);
+
+/* 2. Red-Black - Insert */
+rb_tree_t *rb_tree_insert(rb_tree_t **tree, int value);
+
+/* 3. Red-Black - Array to R-B Tree */
+rb_tree_t *array_to_rb_tree(int *array, size_t size);
+
+/* 4. Red-Black - Remove */
+rb_tree_t *rb_tree_remove(rb_tree_t *root, int n);
+
+/* added for cleanup */
+void rb_tree_delete(rb_tree_t *tree);
 
 #endif /* _RB_TREES_H_ */
