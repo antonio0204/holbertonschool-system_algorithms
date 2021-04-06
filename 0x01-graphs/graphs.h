@@ -1,6 +1,8 @@
 #ifndef GRAPHS_H
 #define GRAPHS_H
 
+/* size_t */
+#include <stddef.h>
 
 /**
  * enum edge_type_e - Enumerates the different types of
@@ -28,8 +30,8 @@ typedef struct vertex_s vertex_t;
  */
 typedef struct edge_s
 {
-	vertex_t    *dest;
-	struct edge_s   *next;
+	vertex_t *dest;
+	struct edge_s *next;
 } edge_t;
 
 
@@ -46,10 +48,10 @@ typedef struct edge_s
  */
 struct vertex_s
 {
-	size_t      index;
-	char        *content;
-	size_t      nb_edges;
-	edge_t      *edges;
+	size_t index;
+	char   *content;
+	size_t nb_edges;
+	edge_t *edges;
 	struct vertex_s *next;
 };
 
@@ -68,6 +70,9 @@ typedef struct graph_s
 } graph_t;
 
 
+/* graph_display.c - used by example mains */
+void graph_display(const graph_t *graph);
+
 /* task 0. Create graph */
 graph_t *graph_create(void);
 
@@ -75,6 +80,7 @@ graph_t *graph_create(void);
 vertex_t *graph_add_vertex(graph_t *graph, const char *str);
 
 /* task 2. Add an edge */
+edge_t *graph_add_single_edge(vertex_t *src, vertex_t *dest);
 int graph_add_edge(graph_t *graph, const char *src,
 		   const char *dest, edge_type_t type);
 
