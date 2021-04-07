@@ -18,7 +18,6 @@ typedef enum edge_type_e
 } edge_type_t;
 
 
-/* Define the structure temporarily for usage in the edge_t */
 typedef struct vertex_s vertex_t;
 
 /**
@@ -68,6 +67,21 @@ typedef struct graph_s
 	size_t      nb_vertices;
 	vertex_t    *vertices;
 } graph_t;
+
+
+/**
+ * struct BFS_queue_s - ...
+ *
+ * @dest: pointer to vertex in adjacency list
+ * @depth: degrees of separation from first node of traversal
+ * @next: pointer to next vertex in queue
+ */
+typedef struct BFS_queue_s
+{
+	vertex_t *v;
+	size_t depth;
+	struct BFS_queue_s *next;
+} BFS_queue_t;
 
 
 /* graph_display.c - used by example mains */
