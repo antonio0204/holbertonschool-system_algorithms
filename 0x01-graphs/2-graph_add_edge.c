@@ -62,7 +62,7 @@ int graph_add_edge(graph_t *graph, const char *src,
 	if (!graph || !src || !dest ||
 	    type < UNIDIRECTIONAL || type > BIDIRECTIONAL)
 	{
-		fprintf(stderr, "graph_add_edge: invalid args\n");
+		fprintf(stderr, "graph_add_edge: invalid parameters\n");
 		return (0);
 	}
 

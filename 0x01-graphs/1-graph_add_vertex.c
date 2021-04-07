@@ -49,7 +49,7 @@ vertex_t *graph_add_vertex(graph_t *graph, const char *str)
 	new->nb_edges = 0;
 	new->edges    = NULL;
 	new->next     = NULL;
-	/* set vertex as tail of adjaceny list, or head if none exists */
+	/* set vertex as tail of adjacency list, or head if none exists */
 	if (tail)
 		tail->next = new;
 	else
