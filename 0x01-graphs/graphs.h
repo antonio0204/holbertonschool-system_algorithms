@@ -70,10 +70,11 @@ typedef struct graph_s
 
 
 /**
- * struct BFS_queue_s - ...
+ * struct BFS_queue_s - used during a breadth-first traversal of a graph to
+ *   create a singly linked FIFO list of vertices awaiting processing
  *
- * @dest: pointer to vertex in adjacency list
- * @depth: degrees of separation from first node of traversal
+ * @v: pointer to a vertex in adjacency list
+ * @depth: degrees of separation from node that began traversal
  * @next: pointer to next vertex in queue
  */
 typedef struct BFS_queue_s
@@ -106,6 +107,11 @@ size_t depth_first_traverse(const graph_t *graph,
 			    void (*action)(const vertex_t *v, size_t depth));
 
 /* task 5. Breadth-first traversal */
+int inQueue(BFS_queue_t *queue, vertex_t *v);
+void nextInQueue(BFS_queue_t **queue);
+BFS_queue_t *addToQueue(BFS_queue_t **queue, size_t depth, vertex_t *next_v);
+int BFS_visit(BFS_queue_t **queue, unsigned char *visited,
+	      void (*action)(const vertex_t *v, size_t depth));
 size_t breadth_first_traverse(const graph_t *graph,
 			      void (*action)(const vertex_t *v, size_t depth));
 

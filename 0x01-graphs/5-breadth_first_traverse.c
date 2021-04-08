@@ -6,12 +6,16 @@
 #include <string.h>
 /* malloc free */
 #include <stdlib.h>
-/* bool true false */
-#include <stdbool.h>
 
 
-
-static int inQueue(BFS_queue_t *queue, vertex_t *v)
+/**
+ * inQueue - linear search to see if a vertex is in the current queue
+ *
+ * @queue: double pointer to the current head of a queue of vertices
+ * @v: pointer to the vertex to search for
+ * Return: 1 if vertex is found in queue, 0 if not or failure
+ */
+int inQueue(BFS_queue_t *queue, vertex_t *v)
 {
 	BFS_queue_t *temp;
 
@@ -30,22 +34,12 @@ static int inQueue(BFS_queue_t *queue, vertex_t *v)
 }
 
 
-
-static void testPrintQueue(BFS_queue_t *queue)
-{
-	BFS_queue_t *temp;
-
-	temp = queue;
-	while (temp && temp->v)
-	{
-		printf("\t\t\t\tin queue: %s[%lu] depth:%lu\n",
-		       temp->v->content, temp->v->index, temp->depth);
-		temp = temp->next;
-	}
-}
-
-
-static void removeFromQueue(BFS_queue_t **queue)
+/**
+ * nextInQueue - frees head of a queue of vertices and moves up next in line
+ *
+ * @queue: double pointer to the current head of a queue of vertices
+ */
+void nextInQueue(BFS_queue_t **queue)
 {
 	BFS_queue_t *temp;
 
@@ -58,52 +52,58 @@ static void removeFromQueue(BFS_queue_t **queue)
 }
 
 
-static BFS_queue_t *addToQueue(BFS_queue_t **queue, size_t depth, vertex_t *next_v)
+/**
+ * addToQueue - adds a vertex to a queue, and records its depth
+ *
+ * @queue: double pointer to the current head of a queue of vertices
+ * @depth: degrees of separation from the starting vertex of current traversal
+ * @next_v: pointer to the vertex to enqueue
+ * Return: pointer to added tail of queue on success, or NULL on failure
+ */
+BFS_queue_t *addToQueue(BFS_queue_t **queue, size_t depth, vertex_t *next_v)
 {
-	BFS_queue_t *next_in_q = NULL, *temp;
+	BFS_queue_t *tail = NULL, *temp;
 
 	if (!queue || !next_v)
 		return (NULL);
 
-        next_in_q = malloc(sizeof(BFS_queue_t));
-	if (!next_in_q)
+	tail = malloc(sizeof(BFS_queue_t));
+	if (!tail)
 		return (NULL);
-	next_in_q->v = next_v;
-	next_in_q->depth = depth;
-        next_in_q->next = NULL;
+	tail->v = next_v;
+	tail->depth = depth;
+	tail->next = NULL;
 
 	if (!(*queue))
-		*queue = next_in_q;
+		*queue = tail;
 	else
 	{
 		temp = *queue;
 		while (temp && temp->next)
 			temp = temp->next;
-		temp->next = next_in_q;
+		temp->next = tail;
 	}
 
-	return (next_in_q);
+	return (tail);
 }
 
 
 /**
- * BFS_recursion - recursive helper to breadth_first_traverse; recursively
- *   traverses a graph using the breadth-first algorithm to return its maximum
- *   depth
+ * BFS_visit - helper to breadth_first_traverse; performs `action` on each
+ *   member of queue of vertices, and then adds any connected edges that are
+ *   not already visited or in the queue
  *
- * @curr: pointer to the current vertex (starting vertex is abitrary, but
- *   depth_first_traverse expects to start with first vertex in adjacency list)
+ * @queue: pointer to the current head of a queue of vertices
  * @visited: array of bytes indicating traversal history: if byte at a given
  *   index is non-zero, then the vertex at the same index in the adjacency list
  *   has already been visited
- * @curr_depth: depth of current vertex from the starting node
  * @action: pointer to a function to be called for each visited vertex, takes
  *   the parameters:
  *      v: const pointer to the visited vertex
  *      depth: depth of v, from the starting vertex
- * Return: largest vertex depth, or `curr_depth` on failure
+ * Return: 0 on success, or 1 on failure
  */
-static int BFS_visit(BFS_queue_t **queue, unsigned char *visited,
+int BFS_visit(BFS_queue_t **queue, unsigned char *visited,
 	      void (*action)(const vertex_t *v, size_t depth))
 {
 	edge_t *temp_e = NULL;
@@ -122,7 +122,7 @@ static int BFS_visit(BFS_queue_t **queue, unsigned char *visited,
 	visited[curr_v->index] = 1;
 	action(curr_v, curr_depth);
 
-	removeFromQueue(queue);
+	nextInQueue(queue);
 
 	temp_e = curr_v->edges;
 	while (temp_e)
@@ -136,8 +136,6 @@ static int BFS_visit(BFS_queue_t **queue, unsigned char *visited,
 
 		temp_e = temp_e->next;
 	}
-
-	testPrintQueue(*queue);
 
 	return (0);
 }
@@ -185,17 +183,16 @@ size_t breadth_first_traverse(const graph_t *graph,
 
 	while (queue)
 	{
-	        depth = queue->depth;
-
+		depth = queue->depth;
 		if (BFS_visit(&queue, visited, action) == 1)
 		{
-			fprintf(stderr, "breadth_first_traverse: BFS_visit failure\n");
+			fprintf(stderr,
+				"breadth_first_traverse: BFS_visit failure\n");
 			free(visited);
 			while (queue)
-				removeFromQueue(&queue);
+				nextInQueue(&queue);
 			return (0);
 		}
-
 	}
 
 	free(visited);
