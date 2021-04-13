@@ -111,10 +111,7 @@ int BFS_visit(BFS_queue_t **queue, unsigned char *visited,
 	size_t curr_depth;
 
 	if (!queue || !(*queue) || !(*queue)->v || !visited || !action)
-	{
-		/* fprintf(stderr, "BFS_visit: invalid parameters\n"); */
 		return (1);
-	}
 
 	curr_v = (*queue)->v;
 	curr_depth = (*queue)->depth;
@@ -162,10 +159,7 @@ size_t breadth_first_traverse(const graph_t *graph,
 	size_t depth = 0;
 
 	if (!graph || !action)
-	{
-/* fprintf(stderr, "breadth_first_traverse: invalid parameters\n"); */
 		return (0);
-	}
 
 	visited = malloc(sizeof(unsigned char) * graph->nb_vertices);
 	if (!visited)
@@ -176,7 +170,6 @@ size_t breadth_first_traverse(const graph_t *graph,
 	addToQueue(&queue, 0, graph->vertices);
 	if (!queue)
 	{
-/*	fprintf(stderr, "breadth_first_traverse: addToQueue failure\n"); */
 		free(visited);
 		return (0);
 	}
@@ -186,7 +179,6 @@ size_t breadth_first_traverse(const graph_t *graph,
 		depth = queue->depth;
 		if (BFS_visit(&queue, visited, action) == 1)
 		{
-/* fprintf(stderr, "breadth_first_traverse: BFS_visit failure\n"); */
 			free(visited);
 			while (queue)
 				nextInQueue(&queue);
