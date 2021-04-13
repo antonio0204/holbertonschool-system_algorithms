@@ -1,7 +1,5 @@
 #include "graphs.h"
 
-/* fprintf */
-#include <stdio.h>
 /* memset */
 #include <string.h>
 /* malloc free */
@@ -34,10 +32,7 @@ size_t DFS_recursion(vertex_t *curr, unsigned char *visited, size_t curr_depth,
 	size_t max_depth, subtree_depth;
 
 	if (!curr || !visited || !action)
-	{
-		/* fprintf(stderr, "DFS_recursion: invalid parameters\n"); */
 		return (curr_depth);
-	}
 
 	/* mark vertex as visited */
 	visited[curr->index] = 1;
@@ -84,10 +79,7 @@ size_t depth_first_traverse(const graph_t *graph,
 	size_t total_depth;
 
 	if (!graph || !action)
-	{
-/* fprintf(stderr, "depth_first_traverse: invalid parameters\n"); */
 		return (0);
-	}
 
 	visited = malloc(sizeof(unsigned char) * graph->nb_vertices);
 	if (!visited)
