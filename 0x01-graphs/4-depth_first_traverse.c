@@ -35,7 +35,7 @@ size_t DFS_recursion(vertex_t *curr, unsigned char *visited, size_t curr_depth,
 
 	if (!curr || !visited || !action)
 	{
-		fprintf(stderr, "DFS_recursion: invalid parameters\n");
+		/* fprintf(stderr, "DFS_recursion: invalid parameters\n"); */
 		return (curr_depth);
 	}
 
@@ -85,7 +85,7 @@ size_t depth_first_traverse(const graph_t *graph,
 
 	if (!graph || !action)
 	{
-		fprintf(stderr, "depth_first_traverse: invalid parameters\n");
+/* fprintf(stderr, "depth_first_traverse: invalid parameters\n"); */
 		return (0);
 	}
 
