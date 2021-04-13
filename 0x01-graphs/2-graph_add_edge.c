@@ -4,8 +4,6 @@
 #include <stdlib.h>
 /* strlen strcmp */
 #include <string.h>
-/* fprintf */
-#include <stdio.h>
 
 
 /**
@@ -61,10 +59,7 @@ int graph_add_edge(graph_t *graph, const char *src,
 
 	if (!graph || !src || !dest ||
 	    type < UNIDIRECTIONAL || type > BIDIRECTIONAL)
-	{
-		/*fprintf(stderr, "graph_add_edge: invalid parameters\n"); */
 		return (0);
-	}
 
 	for (temp_v = graph->vertices; temp_v; temp_v = temp_v->next)
 	{
@@ -73,27 +68,17 @@ int graph_add_edge(graph_t *graph, const char *src,
 		else if (strcmp(temp_v->content, dest) == 0)
 			dest_v = temp_v;
 	}
+
 	if (!src_v || !dest_v)
-	{
-		/*fprintf(stderr, "graph_add_edge: %s\n", */
-		/*	"src and/or dest not found in adjacency list"); */
 		return (0);
-	}
 
 	if (graph_add_single_edge(src_v, dest_v) == NULL)
-	{
-		/*fprintf(stderr, "graph_add_edge: %s\n", */
-		  /*	"failure to add edge from src to dest"); */
 		return (0);
-	}
+
 	if (type == BIDIRECTIONAL)
 	{
 		if (graph_add_single_edge(dest_v, src_v) == NULL)
-		{
-			/*fprintf(stderr, "graph_add_edge: %s\n", */
-			/*  "failure to add edge from dest to src"); */
 			return (0);
-		}
 	}
 
 	return (1);
