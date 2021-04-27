@@ -136,7 +136,7 @@ binary_tree_node_t *heap_insert(heap_t *heap, void *data)
 	void *swap;
 
 	/* NULL heap must return error, as no data_cmp provided */
-	if (!heap || !data)
+	if (!heap)
 		return (NULL);
 
 	/* no heap, start new tree */
