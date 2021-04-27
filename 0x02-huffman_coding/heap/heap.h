@@ -1,6 +1,10 @@
 #ifndef _HEAP_H_
 #define _HEAP_H_
 
+/* size_t */
+#include <stddef.h>
+
+
 /**
  * struct binary_tree_node_s - Binary tree node data structure
  *
@@ -17,6 +21,7 @@ typedef struct binary_tree_node_s
 	struct binary_tree_node_s *parent;
 } binary_tree_node_t;
 
+
 /**
  * struct heap_s - Heap data structure
  *
@@ -30,5 +35,29 @@ typedef struct heap_s
 	int (*data_cmp)(void *, void *);
 	binary_tree_node_t *root;
 } heap_t;
+
+
+/* task 0. Min Binary Heap - Create heap */
+/* task 2. Min Binary Heap - Insert node */
+/* heap_create.c */
+heap_t *heap_create(int (*data_cmp)(void *, void *));
+
+/* task 1. Min Binary Heap - Create node */
+/* task 2. Min Binary Heap - Insert node */
+/* binary_tree_node.c */
+binary_tree_node_t *binary_tree_node(binary_tree_node_t *parent, void *data);
+
+/* task 2. Min Binary Heap - Insert node */
+/* heap_insert.c */
+binary_tree_node_t *heap_insert(heap_t *heap, void *data);
+
+/* task 3. Min Binary Heap - Extract */
+/* heap_extract.c */
+void *heap_extract(heap_t *heap);
+
+/* task 4. Min Binary Heap - Delete heap */
+/* heap_delete.c */
+void heap_delete(heap_t *heap, void (*free_data)(void *));
+
 
 #endif /* _HEAP_H_ */
