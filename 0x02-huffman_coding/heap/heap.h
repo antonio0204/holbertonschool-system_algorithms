@@ -37,6 +37,21 @@ typedef struct heap_s
 } heap_t;
 
 
+/* task 2. Min Binary Heap - Insert node */
+/**
+ * struct binary_tree_node_queue_s - node in singly linked list used as a
+ *   queue to traverse a binary tree in level order
+ *
+ * @node: pointer to node in a binary tree
+ * @next: pointer to next member of queue
+ */
+typedef struct binary_tree_node_queue_s
+{
+	binary_tree_node_t *node;
+	struct binary_tree_node_queue_s *next;
+} bt_node_queue_t;
+
+
 /* task 0. Min Binary Heap - Create heap */
 /* task 2. Min Binary Heap - Insert node */
 /* heap_create.c */
@@ -49,6 +64,12 @@ binary_tree_node_t *binary_tree_node(binary_tree_node_t *parent, void *data);
 
 /* task 2. Min Binary Heap - Insert node */
 /* heap_insert.c */
+bt_node_queue_t *BTQueuePush(bt_node_queue_t **queue,
+			     binary_tree_node_t *node);
+void BTQueueAdvance(bt_node_queue_t **queue);
+void BTQueueClear(bt_node_queue_t **queue);
+binary_tree_node_t *binaryTreeCompleteInsert(binary_tree_node_t *root,
+					     void *data);
 binary_tree_node_t *heap_insert(heap_t *heap, void *data);
 
 /* task 3. Min Binary Heap - Extract */
