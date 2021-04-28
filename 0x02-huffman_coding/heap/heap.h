@@ -63,21 +63,30 @@ heap_t *heap_create(int (*data_cmp)(void *, void *));
 binary_tree_node_t *binary_tree_node(binary_tree_node_t *parent, void *data);
 
 /* task 2. Min Binary Heap - Insert node */
+/* task 3. Min Binary Heap - Extract */
 /* heap_insert.c */
 bt_node_queue_t *BTQueuePush(bt_node_queue_t **queue,
 			     binary_tree_node_t *node);
 void BTQueueAdvance(bt_node_queue_t **queue);
 void BTQueueClear(bt_node_queue_t **queue);
+/* task 2. Min Binary Heap - Insert node */
+/* heap_insert.c */
 binary_tree_node_t *binaryTreeCompleteInsert(binary_tree_node_t *root,
 					     void *data);
 binary_tree_node_t *heap_insert(heap_t *heap, void *data);
 
 /* task 3. Min Binary Heap - Extract */
 /* heap_extract.c */
+size_t binaryTreeSize(const binary_tree_node_t *tree);
+int binaryTreeIsComplete(const binary_tree_node_t *tree,
+			  size_t i, size_t size);
+binary_tree_node_t *lastInLevelOrder(binary_tree_node_t *root);
+void minHeapSiftDown(heap_t *heap);
 void *heap_extract(heap_t *heap);
 
 /* task 4. Min Binary Heap - Delete heap */
 /* heap_delete.c */
+void binaryTreeDelete(binary_tree_node_t *tree, void (*free_data)(void *));
 void heap_delete(heap_t *heap, void (*free_data)(void *));
 
 

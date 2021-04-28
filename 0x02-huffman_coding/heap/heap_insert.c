@@ -158,7 +158,7 @@ binary_tree_node_t *heap_insert(heap_t *heap, void *data)
 
 	/* sort data towards root if *(temp->data) < *(temp->parent->data) */
 	temp = new;
-	while (temp && temp->parent &&
+	while (temp && temp->parent && heap->data_cmp &&
 	       heap->data_cmp(temp->data, temp->parent->data) < 0)
 	{
 		swap = temp->data;
