@@ -76,7 +76,7 @@ binary_tree_node_t *BTCompleteInsert(binary_tree_node_t *root,
 binary_tree_node_t *minHeapSiftUp(binary_tree_node_t *new,
 				  int (data_cmp)(void *, void *));
 binary_tree_node_t *heapInsert(binary_tree_node_t **root,
-				int (data_cmp)(void *, void *), void *data);
+			       int (data_cmp)(void *, void *), void *data);
 binary_tree_node_t *heap_insert(heap_t *heap, void *data);
 
 /* task 3. Min Binary Heap - Extract */

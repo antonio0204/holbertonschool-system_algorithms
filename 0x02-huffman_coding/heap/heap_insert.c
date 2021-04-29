@@ -164,7 +164,7 @@ binary_tree_node_t *minHeapSiftUp(binary_tree_node_t *new,
  * Return: pointer to the inserted node, or NULL on failure
  */
 binary_tree_node_t *heapInsert(binary_tree_node_t **root,
-				int (data_cmp)(void *, void *), void *data)
+			       int (data_cmp)(void *, void *), void *data)
 {
 	binary_tree_node_t *new = NULL;
 

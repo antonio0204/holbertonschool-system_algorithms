@@ -101,14 +101,10 @@ heap_t *huffman_priority_queue(char *data, size_t *freq, size_t size)
 	for (i = 0; i < size; i++)
 	{
 		symbol = symbol_create(data[i], freq[i]);
-		/* huffman_tree is without heap_t wrapper at this stage */
-		ht_node = BTCompleteInsert(huffman_tree, symbol);
-		ht_node = minHeapSiftUp(ht_node, symbolCompare);
-		/* priority_queue has heap_t wrapper as usual */
+		/* Huffman tree is without heap_t wrapper at this stage */
+		ht_node = heapInsert(&ht_root, symbolCompare, symbol);
+		/* priority_queue has heap_t wrapper */
 		pq_node = heap_insert(priority_queue, ht_node);
-
-		if (!ht_root)
-			ht_root = ht_node;
 
 		if (!symbol || !ht_node || !pq_node)
 		{
