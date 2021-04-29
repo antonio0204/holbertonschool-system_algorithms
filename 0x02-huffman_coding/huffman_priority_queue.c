@@ -3,10 +3,15 @@
 /* free */
 #include <stdlib.h>
 
-#include <stdio.h>
 
-void binary_tree_print(const binary_tree_node_t *heap, int (*print_data)(char *, void *));
-
+/**
+ * symbolCompare - TBD
+ *
+ * @p1: TBD
+ * @p2: TBD
+ * Return: Positive if frequency 1 is greater, 0 if same values, or negative if
+ *   frequency 2 is greater
+ */
 int symbolCompare(void *p1, void *p2)
 {
 	symbol_t *sym1, *sym2;
@@ -21,9 +26,18 @@ int symbolCompare(void *p1, void *p2)
 	return (freq1 - freq2);
 }
 
+
+/**
+ * nestedSymbolCompare - TBD
+ *
+ * @p1: TBD
+ * @p2: TBD
+ * Return: Positive if frequency 1 is greater, 0 if same values, or negative if
+ *   frequency 2 is greater
+ */
 int nestedSymbolCompare(void *p1, void *p2)
 {
-        binary_tree_node_t *node1, *node2;
+	binary_tree_node_t *node1, *node2;
 	symbol_t *sym1, *sym2;
 	size_t freq1, freq2;
 
@@ -40,53 +54,47 @@ int nestedSymbolCompare(void *p1, void *p2)
 }
 
 
+/**
+ * freeSymbol - meant to be used as free_data parameter to binaryTreeDelete or
+ *   heap_delete; frees memory allocated for a symbol_t struct
+ *
+ * @p: void pointer intended to be cast into symbol_t pointer
+ */
 void freeSymbol(void *p)
 {
 	free((symbol_t *)p);
 }
 
-/**
- * nested_print - Prints a symbol structure stored in a nested node
- *
- * @buffer: Buffer to print into
- * @data: Pointer to a node's data
- *
- * Return: Number of bytes written in buffer
- */
-int char_freq_print(char *buffer, void *data)
-{
-    symbol_t *symbol;
-    int length;
-
-    symbol = (symbol_t *)data;
-    length = sprintf(buffer, "(%c/%lu)", symbol->data, symbol->freq);
-    return (length);
-}
-
-
 
 /**
- * huffman_priority_queue - creates a priority queue (Min Binary Heap of ASCII
- *   characters sorted by frequency of appearance) for the Huffman coding
- *   algorithm
+ * huffman_priority_queue - Creates a priority queue for use in building a
+ *   Huffman Tree.
  *
- * @data:
- * @freq:
- * @size:
- * Return:
+ *   Each node in the returned heap contains as its `data` a pointer to the
+ *     corresponding position in the Huffman Tree, a second Min Binary Heap
+ *     which at first mirrors the queue tree structure. As values are
+ *     extracted, summed and reinserted into the Huffman Tree, this priority
+ *     queue will serve to keep track of how many operations remain in to
+ *     reach the final form of the Huffman Tree.
+ *
+ * @data: array of characters to store in Huffman tree
+ * @freq: frequency of appearance of character at each corresponding index
+ *   in `data`
+ * @size: amount of members in both `data` and `freq`
+ * Return: heap_t containing priority queue that refers to an unsummed Huffman
+ *   Tree, or NULL on failure
  */
 heap_t *huffman_priority_queue(char *data, size_t *freq, size_t size)
 {
+	binary_tree_node_t *ht_root = NULL, *ht_node = NULL, *pq_node = NULL;
 	heap_t *priority_queue = NULL;
-	binary_tree_node_t *huffman_tree = NULL,
-		*ht_node = NULL, *pq_node = NULL/*, *bt1 = NULL*/;
-	symbol_t *symbol = NULL/*, *s1 = NULL*/;
+	symbol_t *symbol = NULL;
 	size_t i;
 
 	if (!data || !freq || size == 0)
 		return (NULL);
 
-        priority_queue = heap_create(nestedSymbolCompare);
+	priority_queue = heap_create(nestedSymbolCompare);
 	if (!priority_queue)
 		return (NULL);
 
@@ -98,41 +106,19 @@ heap_t *huffman_priority_queue(char *data, size_t *freq, size_t size)
 		ht_node = minHeapSiftUp(ht_node, symbolCompare);
 		/* priority_queue has heap_t wrapper as usual */
 		pq_node = heap_insert(priority_queue, ht_node);
-/*
-		printf("symbol @ %p data:%c freq:%lu\n",
-		       (void *)symbol, symbol ? symbol->data : 0, symbol ? symbol->freq : 0);
-		printf("ht_node @ %p ht_node->data @ %p ht_node->data->data:%c ht_node->data->freq:%lu\n",
-		       (void *)ht_node,
-		       ht_node ? (void *)(ht_node->data) : NULL,
-		       (ht_node && ht_node->data) ? ((symbol_t *)(ht_node->data))->data : 0,
-		       (ht_node && ht_node->data) ? ((symbol_t *)(ht_node->data))->freq : 0);
 
-		printf("pq_node @ %p pq_node->data @ %p pq_node->data->data @%p\n",
-		       (void *)pq_node,
-		       pq_node ? (void *)(pq_node->data) : NULL,
-		       (pq_node && pq_node->data) ? (void *)(((binary_tree_node_t *)(pq_node->data))->data) : NULL);
-
-		if (pq_node && pq_node->data && ((binary_tree_node_t *)(pq_node->data))->data)
-		{
-			printf("pq_node->data->data->data:%c pq_node->data->data->freq:%lu\n",
-			       ((symbol_t *)(((binary_tree_node_t *)(pq_node->data))->data))->data,
-			       ((symbol_t *)(((binary_tree_node_t *)(pq_node->data))->data))->freq);
-		}
-*/
-		if (!huffman_tree)
-			huffman_tree = ht_node;
+		if (!ht_root)
+			ht_root = ht_node;
 
 		if (!symbol || !ht_node || !pq_node)
 		{
-			BTDelete(huffman_tree, freeSymbol);
+			binaryTreeDelete(ht_root, freeSymbol);
 			heap_delete(priority_queue, NULL);
 			return (NULL);
 		}
 
 		priority_queue->size++;
 	}
-/*
-	binary_tree_print(huffman_tree, char_freq_print);
-*/
+
 	return (priority_queue);
 }
