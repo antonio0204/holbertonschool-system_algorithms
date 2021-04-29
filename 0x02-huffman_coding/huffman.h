@@ -1,6 +1,8 @@
 #ifndef HUFFMAN_H
 #define HUFFMAN_H
 
+/* heap_t binary_tree_node_t */
+#include "heap.h"
 /* size_t */
 #include <stddef.h>
 
@@ -24,6 +26,9 @@ symbol_t *symbol_create(char data, size_t freq);
 
 /* task 6. Huffman coding - Step 1: Priority queue */
 /* huffman_priority_queue.c */
+int symbolCompare(void *p1, void *p2);
+int nestedSymbolCompare(void *p1, void *p2);
+void freeSymbol(void *p);
 heap_t *huffman_priority_queue(char *data, size_t *freq, size_t size);
 
 /* task 7. Huffman coding - Step 2: Extract */

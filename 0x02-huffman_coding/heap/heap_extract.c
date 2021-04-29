@@ -108,8 +108,9 @@ binary_tree_node_t *lastInLevelOrder(binary_tree_node_t *root)
 
 /**
  * minHeapSiftDown - Intended for use after swapping the data in the root and
- *   last level order nodes of a Binary Heap. Restores Min Binary Heap
- *   properties of a tree by sifting swapped data down from root postion.
+ *   last level order nodes of a Binary Heap in preparation for extraction.
+ *   Restores Min Binary Heap properties of a tree by sifting swapped data
+ *   down from root position.
  *
  * @heap: pointer to a heap_t binary heap profile structure
  */

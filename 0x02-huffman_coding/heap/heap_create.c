@@ -10,10 +10,7 @@
  */
 heap_t *heap_create(int (*data_cmp)(void *, void *))
 {
-	heap_t *new;
-
-	if (!data_cmp)
-		return (NULL);
+	heap_t *new = NULL;
 
 	new = malloc(sizeof(heap_t));
 	if (!new)
