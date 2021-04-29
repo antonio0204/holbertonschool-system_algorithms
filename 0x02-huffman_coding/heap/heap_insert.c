@@ -71,21 +71,21 @@ void BTQueueClear(bt_node_queue_t **queue)
 
 
 /**
- * binaryTreeCompleteInsert - uses queue to insert new leaves into a binary
+ * BTCompleteInsert - uses queue to insert new leaves into a binary
  *   tree in level order, keeping tree complete
  *
  * @root: pointer to root node of heap to traverse
  * @data: pointer to value to store in the new node
  * Return: pointer to the new node, or NULL on failure
  */
-binary_tree_node_t *binaryTreeCompleteInsert(binary_tree_node_t *root,
-					     void *data)
+binary_tree_node_t *BTCompleteInsert(binary_tree_node_t *root,
+				     void *data)
 {
 	binary_tree_node_t *new = NULL;
 	bt_node_queue_t *queue = NULL;
 
 	if (!root)
-		return (NULL);
+		return (binary_tree_node(NULL, data));
 
 	queue = BTQueuePush(&queue, root);
 	if (!queue)
@@ -124,42 +124,26 @@ binary_tree_node_t *binaryTreeCompleteInsert(binary_tree_node_t *root,
 
 
 /**
- * heap_insert - inserts a value into a Min Binary Beap
+ * minHeapSiftUp - Intended for use after inserting a new node into a heap.
+ *   Restores Min Binary Heap properties of a tree by sifting swapped data
+ *   up towards the root position.
  *
- * @heap: pointer to a binary heap profile
- * @data: pointer containing data to store in the inserted node
- * Return: pointer to the inserted node, or NULL on failure
+ * @new: pointer to newly level-order inserted node in Binary Heap
+ * @data_cmp: pointer to function used for data comparison
+ * Return: pointer to node in tree that will store new value after sifting
  */
-binary_tree_node_t *heap_insert(heap_t *heap, void *data)
+binary_tree_node_t *minHeapSiftUp(binary_tree_node_t *new,
+				  int (data_cmp)(void *, void *))
 {
-	binary_tree_node_t *new = NULL, *temp = NULL;
+	binary_tree_node_t *temp = NULL;
 	void *swap;
 
-	/* NULL heap must return error, as no data_cmp provided */
-	if (!heap)
-		return (NULL);
-
-	/* no heap, start new tree */
-	if (!(heap->root))
-	{
-		new = binary_tree_node(NULL, data);
-		if (!new)
-			return (NULL);
-		heap->root = new;
-		heap->size++;
+	if (!data_cmp)
 		return (new);
-	}
 
-	/* find next available leaf position in level order */
-	new = binaryTreeCompleteInsert(heap->root, data);
-	if (!new)
-		return (NULL);
-	heap->size++;
-
-	/* sort data towards root if *(temp->data) < *(temp->parent->data) */
 	temp = new;
-	while (temp && temp->parent && heap->data_cmp &&
-	       heap->data_cmp(temp->data, temp->parent->data) < 0)
+	while (temp && temp->parent &&
+	       data_cmp(temp->data, temp->parent->data) < 0)
 	{
 		swap = temp->data;
 		temp->data = temp->parent->data;
@@ -168,4 +152,34 @@ binary_tree_node_t *heap_insert(heap_t *heap, void *data)
 	}
 
 	return (temp);
+}
+
+
+/**
+ * heap_insert - inserts a value into a Min Binary Beap
+ *
+ * @heap: pointer to a binary heap profile
+ * @data: pointer containing data to store in the inserted node
+ * Return: pointer to the inserted node, or NULL on failure
+ */
+binary_tree_node_t *heap_insert(heap_t *heap, void *data)
+{
+	binary_tree_node_t *new = NULL;
+
+	/* NULL heap must return error, as no data_cmp provided */
+	if (!heap)
+		return (NULL);
+
+	/* find next available leaf position in level order */
+	new = BTCompleteInsert(heap->root, data);
+	if (!new)
+		return (NULL);
+	if (!(heap->root))
+		heap->root = new;
+	heap->size++;
+
+	/* sort data towards root if *(temp->data) < *(temp->parent->data) */
+	new = minHeapSiftUp(new, heap->data_cmp);
+
+	return (new);
 }

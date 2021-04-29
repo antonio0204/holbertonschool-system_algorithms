@@ -71,8 +71,10 @@ void BTQueueAdvance(bt_node_queue_t **queue);
 void BTQueueClear(bt_node_queue_t **queue);
 /* task 2. Min Binary Heap - Insert node */
 /* heap_insert.c */
-binary_tree_node_t *binaryTreeCompleteInsert(binary_tree_node_t *root,
-					     void *data);
+binary_tree_node_t *BTCompleteInsert(binary_tree_node_t *root,
+				     void *data);
+binary_tree_node_t *minHeapSiftUp(binary_tree_node_t *new,
+				  int (data_cmp)(void *, void *));
 binary_tree_node_t *heap_insert(heap_t *heap, void *data);
 
 /* task 3. Min Binary Heap - Extract */

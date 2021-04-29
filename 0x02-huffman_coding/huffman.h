@@ -1,6 +1,8 @@
 #ifndef HUFFMAN_H
 #define HUFFMAN_H
 
+/* heap_t binary_tree_node_t */
+#include "heap.h"
 /* size_t */
 #include <stddef.h>
 
