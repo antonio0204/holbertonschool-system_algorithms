@@ -167,7 +167,7 @@ binary_tree_node_t *heap_insert(heap_t *heap, void *data)
 	binary_tree_node_t *new = NULL;
 
 	/* NULL heap must return error, as no data_cmp provided */
-	if (!heap)
+	if (!heap || !data)
 		return (NULL);
 
 	/* find next available leaf position in level order */
