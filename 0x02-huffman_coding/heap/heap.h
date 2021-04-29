@@ -75,6 +75,8 @@ binary_tree_node_t *BTCompleteInsert(binary_tree_node_t *root,
 				     void *data);
 binary_tree_node_t *minHeapSiftUp(binary_tree_node_t *new,
 				  int (data_cmp)(void *, void *));
+binary_tree_node_t *heapInsert(binary_tree_node_t **root,
+				int (data_cmp)(void *, void *), void *data);
 binary_tree_node_t *heap_insert(heap_t *heap, void *data);
 
 /* task 3. Min Binary Heap - Extract */
@@ -83,7 +85,10 @@ size_t binaryTreeSize(const binary_tree_node_t *tree);
 int binaryTreeIsComplete(const binary_tree_node_t *tree,
 			  size_t i, size_t size);
 binary_tree_node_t *lastInLevelOrder(binary_tree_node_t *root);
-void minHeapSiftDown(heap_t *heap);
+void minHeapSiftDown(binary_tree_node_t *root,
+		     int (data_cmp)(void *, void *));
+void *heapExtract(binary_tree_node_t **root,
+		  int (data_cmp)(void *, void *));
 void *heap_extract(heap_t *heap);
 
 /* task 4. Min Binary Heap - Delete heap */

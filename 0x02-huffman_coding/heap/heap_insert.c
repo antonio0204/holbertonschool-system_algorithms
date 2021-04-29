@@ -156,7 +156,38 @@ binary_tree_node_t *minHeapSiftUp(binary_tree_node_t *new,
 
 
 /**
- * heap_insert - inserts a value into a Min Binary Beap
+ * heapInsert - inserts a value into a Min Binary Beap
+ *
+ * @root: TBD
+ * @data_cmp: TBD
+ * @data: pointer containing data to store in the inserted node
+ * Return: pointer to the inserted node, or NULL on failure
+ */
+binary_tree_node_t *heapInsert(binary_tree_node_t **root,
+				int (data_cmp)(void *, void *), void *data)
+{
+	binary_tree_node_t *new = NULL;
+
+	if (!root || !data_cmp || !data)
+		return (NULL);
+
+	/* find next available leaf position in level order */
+	new = BTCompleteInsert(*root, data);
+	if (!new)
+		return (NULL);
+	if (!*root)
+		*root = new;
+
+	/* sort data towards root if *(temp->data) < *(temp->parent->data) */
+	new = minHeapSiftUp(new, data_cmp);
+
+	return (new);
+}
+
+
+/**
+ * heap_insert - wraps heapInsert to interface with Binary Heaps contained
+ *   in a `heap_t` structure
  *
  * @heap: pointer to a binary heap profile
  * @data: pointer containing data to store in the inserted node
@@ -166,20 +197,12 @@ binary_tree_node_t *heap_insert(heap_t *heap, void *data)
 {
 	binary_tree_node_t *new = NULL;
 
-	/* NULL heap must return error, as no data_cmp provided */
 	if (!heap || !data)
 		return (NULL);
 
-	/* find next available leaf position in level order */
-	new = BTCompleteInsert(heap->root, data);
-	if (!new)
-		return (NULL);
-	if (!(heap->root))
-		heap->root = new;
-	heap->size++;
-
-	/* sort data towards root if *(temp->data) < *(temp->parent->data) */
-	new = minHeapSiftUp(new, heap->data_cmp);
+	new = heapInsert(&(heap->root), heap->data_cmp, data);
+	if (new)
+		heap->size++;
 
 	return (new);
 }

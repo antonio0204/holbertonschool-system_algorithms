@@ -112,19 +112,24 @@ binary_tree_node_t *lastInLevelOrder(binary_tree_node_t *root)
  *   Restores Min Binary Heap properties of a tree by sifting swapped data
  *   down from root position.
  *
- * @heap: pointer to a heap_t binary heap profile structure
+ * @root: TBD
+ * @data_cmp: TBD
  */
-void minHeapSiftDown(heap_t *heap)
+void minHeapSiftDown(binary_tree_node_t *root,
+		     int (data_cmp)(void *, void *))
 {
 	binary_tree_node_t *temp = NULL, *next = NULL;
 	void *swap;
 
-	temp = heap->root;
+	if (!data_cmp)
+		return;
+
+	temp = root;
 	while (temp)
 	{
 		/* *(temp->left->data) > *(temp->right->data) */
-		if ((temp->left && temp->right) && heap->data_cmp &&
-		    heap->data_cmp(temp->left->data, temp->right->data) > 0)
+		if ((temp->left && temp->right) &&
+		    data_cmp(temp->left->data, temp->right->data) > 0)
 			next = temp->right;
 		else
 			next = temp->left;
@@ -142,30 +147,32 @@ void minHeapSiftDown(heap_t *heap)
 
 
 /**
- * heap_extract - extacts the value at the root of a Min Binary Heap, expects
+ * heapExtract - extacts the value at the root of a Min Binary Heap, expects
  *   heap to already be a complete binary tree
  *
- * @heap: pointer to a heap_t binary heap profile structure
+ * @root: TBD
+ * @data_cmp: TBD
  * Return: pointer to data from root node of binary heap
  */
-void *heap_extract(heap_t *heap)
+void *heapExtract(binary_tree_node_t **root,
+		  int (data_cmp)(void *, void *))
 {
 	binary_tree_node_t *last = NULL;
 	void *extract = NULL;
 
-	if (!heap || !heap->root)
+	if (!root || !data_cmp)
 		return (NULL);
 
-	last = lastInLevelOrder(heap->root);
+	last = lastInLevelOrder(*root);
 	if (!last)
 		return (NULL);
 
 	/* data from last node in level order copied into root node */
-	extract = heap->root->data;
-	heap->root->data = last->data;
+	extract = (*root)->data;
+	(*root)->data = last->data;
 
 	/* sift this copied data down to heapify back to Min Binary Heap */
-	minHeapSiftDown(heap);
+	minHeapSiftDown(*root, data_cmp);
 
 	/* once swapped and re-heapified, delete last level order node */
 	if (last->parent)
@@ -175,10 +182,32 @@ void *heap_extract(heap_t *heap)
 		else if (last->parent->right == last)
 			last->parent->right = NULL;
 	}
-	if (last == heap->root)
-		heap->root = NULL;
+
+	if (last == *root)
+		*root = NULL;
 	free(last);
-	heap->size--;
+
+	return (extract);
+}
+
+
+/**
+ * heap_extract - wraps heapExtract to interface with Binary Heaps contained
+ *   in a `heap_t` structure
+ *
+ * @heap: pointer to a heap_t binary heap profile structure
+ * Return: pointer to data from root node of binary heap
+ */
+void *heap_extract(heap_t *heap)
+{
+	void *extract = NULL;
+
+	if (!heap || !heap->data_cmp || !heap->root)
+		return (NULL);
+
+	extract = heapExtract(&(heap->root), heap->data_cmp);
+	if (extract != NULL)
+		heap->size--;
 
 	return (extract);
 }
