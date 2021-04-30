@@ -66,7 +66,7 @@ int huffman_extract_and_insert(heap_t *priority_queue)
 
 	if (!priority_queue ||/* !priority_queue->data_cmp || */
 	    !priority_queue->root || !priority_queue->root->data)
-		return (1);
+		return (0);
 
 	/* expecting nestedSymbolCompare */
 	priority_queue->data_cmp = nestedSymbolCompare;
@@ -77,19 +77,19 @@ int huffman_extract_and_insert(heap_t *priority_queue)
 	ex_data2 = heap_extract(priority_queue);
 	ex_node2 = (binary_tree_node_t *)ex_data2;
 	if (!ex_node1 || !ex_node2)
-		return (1);
+		return (0);
 
 	/* create sum node */
 	sum_node = huffmanSumNode(ex_node1, ex_node2);
 	if (!sum_node)
-		return (1);
+		return (0);
 
 	/* nest sum node into new node in queue */
 	if (!heap_insert(priority_queue, sum_node))
 	{
 		free(sum_node->data);
 		free(sum_node);
-		return (1);
+		return (0);
 	}
 
 	/* knit sum node into Huffman tree position */
@@ -98,5 +98,5 @@ int huffman_extract_and_insert(heap_t *priority_queue)
 	sum_node->right = ex_node2;
 	ex_node2->parent = sum_node;
 
-	return (0);
+	return (1);
 }

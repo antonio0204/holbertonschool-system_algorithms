@@ -41,7 +41,7 @@ binary_tree_node_t *huffman_tree(char *data, size_t *freq, size_t size)
 	while (huff_pq->root &&
 	       (huff_pq->root->left || huff_pq->root->right))
 	{
-		if (huffman_extract_and_insert(huff_pq) == 1)
+		if (!huffman_extract_and_insert(huff_pq))
 		{
 			heap_delete(huff_pq, freeNestedNode);
 			return (NULL);
