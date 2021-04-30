@@ -28,7 +28,8 @@ symbol_t *symbol_create(char data, size_t freq);
 /* huffman_priority_queue.c */
 int symbolCompare(void *p1, void *p2);
 int nestedSymbolCompare(void *p1, void *p2);
-void freeSymbol(void *p);
+void freeSymbol(void *data);
+void freeNestedNode(void *data);
 heap_t *huffman_priority_queue(char *data, size_t *freq, size_t size);
 
 /* task 7. Huffman coding - Step 2: Extract */
