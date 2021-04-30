@@ -34,6 +34,8 @@ heap_t *huffman_priority_queue(char *data, size_t *freq, size_t size);
 
 /* task 7. Huffman coding - Step 2: Extract */
 /* huffman_extract_and_insert.c */
+binary_tree_node_t *huffmanSumNode(binary_tree_node_t *ex_node1,
+				   binary_tree_node_t *ex_node2);
 int huffman_extract_and_insert(heap_t *priority_queue);
 
 /* task 8. Huffman coding - Step 3: Build Huffman tree */
