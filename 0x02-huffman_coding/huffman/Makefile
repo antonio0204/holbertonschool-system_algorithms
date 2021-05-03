@@ -3,7 +3,7 @@
 
 
 CC = gcc
-CFLAGS = -Wall -Werror -Wextra -pedantic
+CFLAGS = -Wall -Werror -Wextra -pedantic -I../heap/ -I../
 
 
 # task 10. Huffman - Compression & Decompression
@@ -38,7 +38,8 @@ huffman_tree.o: ../huffman.h ../huffman_tree.c
 huffman_codes.o: ../huffman.h ../huffman_codes.c
 	$(CC) -c $(CFLAGS) ../huffman_codes.c
 
-huffman: ../heap/heap.h ../huffman.h \
+#test with other name since huffman is also name of directory
+hman: ../heap/heap.h ../huffman.h \
 	heap_create.o \
 	binary_tree_node.o \
 	heap_insert.o \
@@ -60,7 +61,7 @@ huffman: ../heap/heap.h ../huffman.h \
 	huffman_extract_and_insert.o \
 	huffman_tree.o \
 	huffman_codes.o \
-	-o huffman
+	-o hman
 
 
 .PHONY: clean oclean fclean re
