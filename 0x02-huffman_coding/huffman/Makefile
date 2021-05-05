@@ -35,11 +35,29 @@ huffman_extract_and_insert.o: ../huffman.h ../huffman_extract_and_insert.c
 huffman_tree.o: ../huffman.h ../huffman_tree.c
 	$(CC) -c $(CFLAGS) ../huffman_tree.c
 
-huffman_codes.o: ../huffman.h ../huffman_codes.c
-	$(CC) -c $(CFLAGS) ../huffman_codes.c
+#huffman_codes.o: ../huffman.h ../huffman_codes.c
+#	$(CC) -c $(CFLAGS) ../huffman_codes.c
 
-#test with other name since huffman is also name of directory
-hman: ../heap/heap.h ../huffman.h \
+huffman.o: ../heap/heap.h _huffman.h huffman.c
+	$(CC) -c $(CFLAGS) huffman.c
+
+huffmanCompress.o: ../heap/heap.h _huffman.h huffmanCompress.c
+	$(CC) -c $(CFLAGS) huffmanCompress.c
+
+huffmanDecompress.o: ../heap/heap.h _huffman.h huffmanDecompress.c
+	$(CC) -c $(CFLAGS) huffmanDecompress.c
+
+serialization.o: ../heap/heap.h _huffman.h serialization.c
+	$(CC) -c $(CFLAGS) serialization.c
+
+read_write.o: ../heap/heap.h _huffman.h read_write.c
+	$(CC) -c $(CFLAGS) read_write.c
+
+# only use during testing
+_binary_tree_print.o: ../_binary_tree_print.c
+	$(CC) -c $(CFLAGS) ../_binary_tree_print.c
+
+huffman: ../heap/heap.h ../huffman.h _huffman.h \
 	heap_create.o \
 	binary_tree_node.o \
 	heap_insert.o \
@@ -49,8 +67,14 @@ hman: ../heap/heap.h ../huffman.h \
 	huffman_priority_queue.o \
 	huffman_extract_and_insert.o \
 	huffman_tree.o \
-	huffman_codes.o
-	$(CC) $(CFLAGS) ../heap/heap.h ../huffman.h \
+	huffman.o \
+	huffmanCompress.o \
+	huffmanDecompress.o \
+	serialization.o \
+	_binary_tree_print.o \
+	read_write.o
+#	huffman_codes.o
+	$(CC) $(CFLAGS) ../heap/heap.h ../huffman.h _huffman.h \
 	heap_create.o \
 	binary_tree_node.o \
 	heap_insert.o \
@@ -60,8 +84,15 @@ hman: ../heap/heap.h ../huffman.h \
 	huffman_priority_queue.o \
 	huffman_extract_and_insert.o \
 	huffman_tree.o \
-	huffman_codes.o \
-	-o hman
+	huffman.o \
+	huffmanCompress.o \
+	huffmanDecompress.o \
+	serialization.o \
+	_binary_tree_print.o \
+	read_write.o \
+	-o huffman
+#	huffman_codes.o
+
 
 
 .PHONY: clean oclean fclean re
