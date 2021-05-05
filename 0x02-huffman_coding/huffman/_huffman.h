@@ -61,6 +61,7 @@ binary_tree_node_t *HuffmanTreeFromText(FILE *in_file);
 int huffmanCompress(FILE *in_file, FILE *out_file);
 
 /* huffmanDecompress.c */
+void freeChar(void *data);
 int huffmanDecompress(FILE *in_file, FILE *out_file);
 
 /* serialization.c */

@@ -3,6 +3,8 @@
 #include "heap.h"
 /* FILE fopen printf */
 #include <stdio.h>
+/* free */
+#include <stdlib.h>
 
 void binary_tree_print(const binary_tree_node_t *heap, int (*print_data)(char *, void *));
 
@@ -32,6 +34,18 @@ int char_print(char *buffer, void *data)
     return (length);
 }
 
+
+/**
+ * freeChar - meant to be used as free_data parameter to heap_delete or
+ *   binaryTreeDelete; frees memory allocated for a char
+ *
+ * @data: void pointer intended to be cast into data pointer
+ */
+void freeChar(void *data)
+{
+        if (data)
+                free((char *)data);
+}
 
 
 /**
@@ -65,12 +79,17 @@ int huffmanDecompress(FILE *in_file, FILE *out_file)
 			   BUF_SIZE, in_file);
 
 	printf("\tread_bytes from compressed file:%lu\n", read_bytes);
+	fclose(in_file);
+	fclose(out_file);
 
 	h_tree = huffmanDeserialize(buff, &r_bit, NULL);
 	if (!h_tree)
 		return (1);
 
 	binary_tree_print(h_tree, char_print);
+
+	binaryTreeDelete(h_tree, freeChar);
+
 
 	return (0);
 }

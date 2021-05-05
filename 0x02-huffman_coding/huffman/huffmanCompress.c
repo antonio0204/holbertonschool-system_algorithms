@@ -5,6 +5,8 @@
 #include <stdlib.h>
 /* fread feof fclose */
 #include <stdio.h>
+/* memset */
+#include <string.h>
 
 /* symbol_t */
 #include "huffman.h"
@@ -52,6 +54,7 @@ size_t *tallyFrequencies(FILE *in_file)
 	freqs = malloc(sizeof(size_t) * CHAR_RANGE);
 	if (!freqs)
 		return (NULL);
+	memset(freqs, 0, sizeof(size_t) * CHAR_RANGE);
 
         do {
 		read_bytes = fread(buff, sizeof(unsigned char),
@@ -68,6 +71,10 @@ size_t *tallyFrequencies(FILE *in_file)
 		free(freqs);
 		return (NULL);
 	}
+
+	for (i = 0; i < read_bytes; i++)
+		freqs[buff[i]]++;
+
 
 	return (freqs);
 }
@@ -88,8 +95,7 @@ int prepareTreeInputs(size_t *freqs, char **data,
 {
 	size_t i, j;
 
-	if (!freqs || !data || !(*data) ||
-	    !freq || !(*freq) || !freq_size)
+	if (!freqs || !data || !freq || !freq_size)
 		return (1);
 
 	for (i = 0, *freq_size = 0; i < CHAR_RANGE; i++)

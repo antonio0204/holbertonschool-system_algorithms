@@ -46,7 +46,7 @@ FILE *openInputFile(char *input_path)
 		return (NULL);
 	}
 
-	in_file = fopen(input_path, "w");
+	in_file = fopen(input_path, "r");
 	if (!in_file)
 	{
 		perror("openInputfile: fopen");
