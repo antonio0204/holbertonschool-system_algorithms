@@ -5,6 +5,9 @@
 #include <stdio.h>
 /* free */
 #include <stdlib.h>
+/* strncmp */
+#include <string.h>
+
 
 void binary_tree_print(const binary_tree_node_t *heap, int (*print_data)(char *, void *));
 
@@ -21,15 +24,17 @@ int char_print(char *buffer, void *data)
     char c;
     int length;
 
-    if (data)
+    if (data == NULL)
+	    length = sprintf(buffer, "($)");
+    else
+    {
 	    c = *((char *)data);
-    else
-	    c = '$';
 
-    if (c < ' ' || c > '~')
-	    length = sprintf(buffer, "(%o)", c);
-    else
-	    length = sprintf(buffer, "(%c)", c);
+	    if (c < ' ' || c > '~')
+		    length = sprintf(buffer, "(%o)", c);
+	    else
+		    length = sprintf(buffer, "('%c')", c);
+    }
 
     return (length);
 }
@@ -55,41 +60,44 @@ void freeChar(void *data)
  * @out_file: TBD
  * Return: TBD
  */
-int huffmanDecompress(FILE *in_file, FILE *out_file)
+int huffmanDecompress(FILE *in_file, FILE *out_file, long int input_file_size)
 {
-	unsigned char buff[BUF_SIZE] = {0};
+	unsigned char r_buff[BUF_SIZE] = {0};
+	bit_t r_bit = {0, 0, 0};
 	huffman_header_t header;
 	binary_tree_node_t *h_tree = NULL;
-	bit_t r_bit = {0, 0, 0}/*, w_bit = {0, 0, 0}*/;
-	/* temp */
 	size_t read_bytes;
 
-	if (!in_file || !out_file)
+	if (!in_file || !out_file || input_file_size < 0)
 		return (1);
 
-	/* check header */
 	if (fread(&header, sizeof(huffman_header_t), 1, in_file) != 1)
+		return (1);
+
+	if (strncmp((char *)(header.huff_id), "\177HUF", 4) != 0)
 	{
-		fclose(in_file);
-		fclose(out_file);
+		printf("Input is not a file compressed by this program!\n");
 		return (1);
 	}
 
-	read_bytes = fread(buff, sizeof(unsigned char),
+	/* one buffer should suffice - serialized trees <= 512 bytes */
+	read_bytes = fread(r_buff, sizeof(unsigned char),
 			   BUF_SIZE, in_file);
-
 	printf("\tread_bytes from compressed file:%lu\n", read_bytes);
-	fclose(in_file);
-	fclose(out_file);
 
-	h_tree = huffmanDeserialize(buff, &r_bit, NULL);
+	h_tree = huffmanDeserialize(r_buff, &r_bit, NULL);
 	if (!h_tree)
 		return (1);
 
 	binary_tree_print(h_tree, char_print);
 
+	if (huffmanDecode(out_file, h_tree, &header, input_file_size,
+			  r_buff, &r_bit) == 1)
+	{
+		binaryTreeDelete(h_tree, freeChar);
+		return (1);
+	}
 	binaryTreeDelete(h_tree, freeChar);
-
 
 	return (0);
 }

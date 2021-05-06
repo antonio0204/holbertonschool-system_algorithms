@@ -43,9 +43,19 @@ int encodeText(char **codes, size_t freq_size, unsigned char *r_buff,
 	size_t i, j, k;
 	char *code = NULL;
 	int code_found;
+	static size_t ii;
 
 	if (!codes || !r_buff || !w_buff || !w_bit)
 		return (1);
+
+	if (ii == 0)
+	{
+		printf("encodeText: after writing tree: w_bit->byte_idx:%lu w_bit->bit_idx:%u\n",
+		       w_bit->byte_idx, w_bit->bit_idx);
+
+		printf("w_buff[w_bit->byte_idx]:%x\n", w_buff[w_bit->byte_idx]);
+	}
+	ii++;
 
 	for (i = 0; i < read_size; i++)
 	{

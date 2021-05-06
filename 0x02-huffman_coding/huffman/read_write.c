@@ -82,11 +82,14 @@ int writeBit(unsigned char *buff, bit_t *w_bit, unsigned char toggle)
 		w_bit->byte &= ~(1 << (7 - w_bit->bit_idx));
 	w_bit->bit_idx++;
 
+	/* zeroing out byte buffer on reset should be dependent on writeByte vs writePartialByte*/
 	if (w_bit->bit_idx == 8)
 	{
 		buff[w_bit->byte_idx] = w_bit->byte;
 		w_bit->byte_idx++;
+/*
 		w_bit->byte = 0;
+*/
 		w_bit->bit_idx = 0;
 	}
 
@@ -108,14 +111,21 @@ int writeByte(unsigned char *buff, bit_t *w_bit, unsigned char byte)
 
 	if (!buff || !w_bit)
 		return (1);
-
+/*
+	if ((char)byte < ' ' || (char)byte > '~')
+	        printf("writeByte: %#x\n", (char)byte);
+	else
+	        printf("writeByte: '%c'\n", (char)byte);
+*/
 	for (i = 0; i < 8; i++)
 	{
 		if (writeBit(buff, w_bit,
 			     (byte & (1 << (7 - i))) ? 1 : 0) == 1)
 			return (1);
 	}
-
+/*
+	printf("writeByte exit: w_bit byte_idx:%lu bit_idx:%u\n", w_bit->byte_idx, w_bit->bit_idx);
+*/
 	return (0);
 }
 
@@ -130,12 +140,17 @@ int writeByte(unsigned char *buff, bit_t *w_bit, unsigned char byte)
 int writePartialByte(unsigned char *buff, bit_t *w_bit)
 {
 	unsigned int orig_bit_i;
+	size_t i;
 
 	if (!buff || !w_bit)
 		return (1);
 
 	if (w_bit->bit_idx != 0)
 	{
+		/* zero out any bits in byte buffer beyond current bit_idx */
+		for (i = w_bit->bit_idx; i < 8; i++)
+			w_bit->byte &= ~(1 << (7 - i));
+
 		orig_bit_i = w_bit->bit_idx;
 		w_bit->bit_idx = 0;
 		/* zero-padded by unassigned bits to left */
@@ -144,6 +159,8 @@ int writePartialByte(unsigned char *buff, bit_t *w_bit)
 		w_bit->bit_idx = orig_bit_i;
 		w_bit->byte_idx -= 1;
 	}
+
+	printf("\twritePartialByte exit: w_bit byte_idx:%lu bit_idx:%u\n", w_bit->byte_idx, w_bit->bit_idx);
 
 	return (0);
 }

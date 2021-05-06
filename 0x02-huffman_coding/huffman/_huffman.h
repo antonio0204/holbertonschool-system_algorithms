@@ -5,6 +5,10 @@
 #include "heap.h"
 /* FILE */
 #include <stdio.h>
+/* struct stat */
+/* stat */
+#include <sys/types.h>
+#include <sys/stat.h>
 
 #define BUF_SIZE 1000
 #define CHAR_RANGE 256  /* extended ASCII, 128 for normal */
@@ -49,7 +53,7 @@ typedef struct huffman_header_s {
 } huffman_header_t;
 
 /* huffman.c */
-FILE *openInputFile(char *input_path);
+FILE *openInputFile(char *input_path, struct stat *st);
 FILE *openOutputFile(char *output_path);
 /* int main(int argc, char *argv[]) */
 
@@ -62,7 +66,7 @@ int huffmanCompress(FILE *in_file, FILE *out_file);
 
 /* huffmanDecompress.c */
 void freeChar(void *data);
-int huffmanDecompress(FILE *in_file, FILE *out_file);
+int huffmanDecompress(FILE *in_file, FILE *out_file, long int input_file_size);
 
 /* huffmanEncode.c */
 void freeCodes(char **codes, size_t freq_size);
@@ -72,6 +76,13 @@ void buildHuffmanCodes(binary_tree_node_t *h_tree, size_t depth,
 		       size_t *i, char *code, char **codes);
 int huffmanEncode(FILE *in_file, binary_tree_node_t *h_tree, size_t freq_size,
 		  unsigned char *w_buff, bit_t *w_bit);
+
+/* huffmanDecode.c */
+char *decodeSingleChar(binary_tree_node_t *h_tree,
+		       unsigned char *r_buff, bit_t *r_bit);
+int huffmanDecode(FILE *out_file, binary_tree_node_t *h_tree,
+		  huffman_header_t *header, long int input_file_size,
+		  unsigned char *r_buff, bit_t *r_bit);
 
 /* serialization.c */
 void huffmanSerialize(binary_tree_node_t *huffman_tree,

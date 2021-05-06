@@ -209,6 +209,11 @@ int huffmanCompress(FILE *in_file, FILE *out_file)
 		return (1);
 	}
 
+	printf("huffmanCompress: after writing tree: w_bit.byte_idx:%lu w_bit.bit_idx:%u\n",
+	       w_bit.byte_idx, w_bit.bit_idx);
+
+	printf("w_buff[w_bit.byte_idx]:%x\n", w_buff[w_bit.byte_idx]);
+
 	/* huffman code starts at bit after serialized tree */
 	header.hc_byte_offset = sizeof(huffman_header_t) + w_bit.byte_idx;
         header.hc_first_bit_i = w_bit.bit_idx;

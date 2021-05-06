@@ -35,9 +35,6 @@ huffman_extract_and_insert.o: ../huffman.h ../huffman_extract_and_insert.c
 huffman_tree.o: ../huffman.h ../huffman_tree.c
 	$(CC) -c $(CFLAGS) ../huffman_tree.c
 
-#huffman_codes.o: ../huffman.h ../huffman_codes.c
-#	$(CC) -c $(CFLAGS) ../huffman_codes.c
-
 huffman.o: ../heap/heap.h _huffman.h huffman.c
 	$(CC) -c $(CFLAGS) huffman.c
 
@@ -49,6 +46,9 @@ huffmanDecompress.o: ../heap/heap.h _huffman.h huffmanDecompress.c
 
 huffmanEncode.o: ../heap/heap.h _huffman.h huffmanEncode.c
 	$(CC) -c $(CFLAGS) huffmanEncode.c
+
+huffmanDecode.o: ../heap/heap.h _huffman.h huffmanDecode.c
+	$(CC) -c $(CFLAGS) huffmanDecode.c
 
 serialization.o: ../heap/heap.h _huffman.h serialization.c
 	$(CC) -c $(CFLAGS) serialization.c
@@ -74,10 +74,10 @@ huffman: ../heap/heap.h ../huffman.h _huffman.h \
 	huffmanCompress.o \
 	huffmanDecompress.o \
 	huffmanEncode.o \
+	huffmanDecode.o \
 	serialization.o \
 	_binary_tree_print.o \
 	read_write.o
-#	huffman_codes.o
 	$(CC) $(CFLAGS) ../heap/heap.h ../huffman.h _huffman.h \
 	heap_create.o \
 	binary_tree_node.o \
@@ -92,12 +92,11 @@ huffman: ../heap/heap.h ../huffman.h _huffman.h \
 	huffmanCompress.o \
 	huffmanDecompress.o \
 	huffmanEncode.o \
+	huffmanDecode.o	\
 	serialization.o \
 	_binary_tree_print.o \
 	read_write.o \
 	-o huffman
-#	huffman_codes.o
-
 
 
 .PHONY: clean oclean fclean re

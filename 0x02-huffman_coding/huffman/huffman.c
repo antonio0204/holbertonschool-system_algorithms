@@ -17,10 +17,12 @@
  * @input_path: TBD
  * Return: TBD
  */
-FILE *openInputFile(char *input_path)
+FILE *openInputFile(char *input_path, struct stat *st)
 {
 	FILE *in_file = NULL;
-	struct stat st;
+
+	if (!input_path || !st)
+		return (NULL);
 
 	if (access(input_path, F_OK | R_OK) == -1)
 	{
@@ -40,7 +42,7 @@ FILE *openInputFile(char *input_path)
 		return (NULL);
 	}
 
-	if (stat(input_path, &st) != -1 && !S_ISREG(st.st_mode))
+	if (stat(input_path, st) != -1 && !S_ISREG(st->st_mode))
 	{
 		printf("Not regular file: %s\n", input_path);
 		return (NULL);
@@ -87,6 +89,8 @@ FILE *openOutputFile(char *output_path)
 int main(int argc, char *argv[])
 {
 	FILE *in_file = NULL, *out_file = NULL;
+	int ret_val;
+	struct stat st;
 
 	if (argc != 4 ||
 	    strlen(argv[1]) != 1 ||
@@ -96,7 +100,7 @@ int main(int argc, char *argv[])
 		return (1);
 	}
 
-	in_file = openInputFile(argv[2]);
+	in_file = openInputFile(argv[2], &st);
 	if (!in_file)
 		return (1);
 
@@ -110,5 +114,9 @@ int main(int argc, char *argv[])
 	if (argv[1][0] == 'c')
 		return (huffmanCompress(in_file, out_file));
 
-	return (huffmanDecompress(in_file, out_file));
+	/* off_t is defined as long int in sys/types.h */
+        ret_val = huffmanDecompress(in_file, out_file, (long int)st.st_size);
+	fclose(in_file);
+	fclose(out_file);
+	return (ret_val);
 }
