@@ -60,7 +60,7 @@ size_t *tallyFrequencies(FILE *in_file)
 		read_bytes = fread(buff, sizeof(unsigned char),
 				   BUF_SIZE, in_file);
 
-		printf("\tread_bytes from text input:%lu\n", read_bytes);
+		printf("\ttallyFrequencies: read_bytes from text input:%lu\n", read_bytes);
 
 		for (i = 0; i < read_bytes; i++)
 			freqs[buff[i]]++;
@@ -72,9 +72,10 @@ size_t *tallyFrequencies(FILE *in_file)
 		return (NULL);
 	}
 
+	rewind(in_file);
+
 	for (i = 0; i < read_bytes; i++)
 		freqs[buff[i]]++;
-
 
 	return (freqs);
 }
@@ -136,10 +137,10 @@ int prepareTreeInputs(size_t *freqs, char **data,
  * @freq_size: TBD
  * Return: TBD
  */
-binary_tree_node_t *HuffmanTreeFromText(FILE *in_file)
+binary_tree_node_t *huffmanTreeFromText(FILE *in_file, size_t *freq_size)
 {
 	size_t *freqs = NULL, *freq = NULL;
-	size_t i, freq_size = 0;
+	size_t i;
 	char *data = NULL;
 	binary_tree_node_t *h_tree = NULL;
 
@@ -147,18 +148,17 @@ binary_tree_node_t *HuffmanTreeFromText(FILE *in_file)
 		return (NULL);
 
 	freqs = tallyFrequencies(in_file);
-	fclose(in_file);
 	if (!freqs)
 		return (NULL);
 
-	if (prepareTreeInputs(freqs, &data, &freq, &freq_size) == 1)
+	if (prepareTreeInputs(freqs, &data, &freq, freq_size) == 1)
 	{
 		free(freqs);
 		return (NULL);
 	}
 	free(freqs);
 
-	for (i = 0; i < freq_size; i++)
+	for (i = 0; i < *freq_size; i++)
 	{
 		if (data[i] < ' ' || data[i] > '~')
 			printf("\ti:%lu data:%x freq:%lu", i, data[i], freq[i]);
@@ -168,7 +168,7 @@ binary_tree_node_t *HuffmanTreeFromText(FILE *in_file)
 			putchar('\n');
 	}
 
-	h_tree = huffman_tree(data, freq, freq_size);
+	h_tree = huffman_tree(data, freq, *freq_size);
 	free(data);
 	free(freq);
 	return (h_tree);
@@ -184,50 +184,64 @@ binary_tree_node_t *HuffmanTreeFromText(FILE *in_file)
  */
 int huffmanCompress(FILE *in_file, FILE *out_file)
 {
-	unsigned char buff[BUF_SIZE] = {0};
+	unsigned char w_buff[BUF_SIZE] = {0};
 	huffman_header_t header = {"\177HUF", 0, 0, 0};
 	binary_tree_node_t *h_tree = NULL;
-	bit_t /*r_bit = {0, 0, 0},*/ w_bit = {0, 0, 0};
+	bit_t w_bit = {0, 0, 0};
+	size_t freq_size = 0;
 
 	if (!in_file || !out_file)
 		return (1);
 
-	h_tree = HuffmanTreeFromText(in_file);
+	h_tree = huffmanTreeFromText(in_file, &freq_size);
 	if (!h_tree)
 		return (1);
 
 	binary_tree_print(h_tree, symbol_print);
-/*
-        memset(buff, 0, BUF_SIZE);
-*/
-	huffmanSerialize(h_tree, buff, &w_bit);
+
+	huffmanSerialize(h_tree, w_buff, &w_bit);
 	/* if partial byte reamins, write to last byte in buffer */
-	if (writePartialByte(buff, &w_bit))
-	    return (1);
+	if (writePartialByte(w_buff, &w_bit) == 1)
+	{
+		fclose(in_file);
+		fclose(out_file);
+		binaryTreeDelete(h_tree, freeSymbol);
+		return (1);
+	}
 
-	binaryTreeDelete(h_tree, freeSymbol);
-/*
-	h_tree = NULL;
-
-	h_tree = huffmanDeserialize(buff, &r_bit, NULL);
-	if (h_tree)
-		binary_tree_print(h_tree, char_print);
-*/
 	/* huffman code starts at bit after serialized tree */
 	header.hc_byte_offset = sizeof(huffman_header_t) + w_bit.byte_idx;
         header.hc_first_bit_i = w_bit.bit_idx;
-	/* final bit index unknown until codes are written, 0 for now */
+
+	if (huffmanEncode(in_file, h_tree, freq_size, w_buff, &w_bit) == 1 ||
+	    writePartialByte(w_buff, &w_bit) == 1)
+	{
+		fclose(in_file);
+		fclose(out_file);
+		binaryTreeDelete(h_tree, freeSymbol);
+		return (1);
+	}
+
+        header.hc_last_bit_i = w_bit.bit_idx;
+
+	fclose(in_file);
+	binaryTreeDelete(h_tree, freeSymbol);
 
 	/* write header to file */
         if (fwrite(&header, sizeof(huffman_header_t), 1, out_file) != 1)
+	{
+		fclose(out_file);
 		return (1);
+	}
 
-	/* write serialized tree to file */
-        if (fwrite(buff, sizeof(unsigned char), w_bit.byte_idx + 1, out_file) !=
-	    w_bit.byte_idx + 1)
+	/* write serialized tree and encoded teto file */
+        if (fwrite(w_buff, sizeof(unsigned char), w_bit.byte_idx + 1,
+		   out_file) != w_bit.byte_idx + 1)
+	{
+		fclose(out_file);
 		return (1);
+	}
 
 	fclose(out_file);
-
 	return (0);
 }

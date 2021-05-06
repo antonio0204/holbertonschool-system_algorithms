@@ -57,12 +57,21 @@ FILE *openOutputFile(char *output_path);
 size_t *tallyFrequencies(FILE *in_file);
 int prepareTreeInputs(size_t *freqs, char **data,
 		      size_t **freq, size_t *freq_size);
-binary_tree_node_t *HuffmanTreeFromText(FILE *in_file);
+binary_tree_node_t *huffmanTreeFromText(FILE *in_file, size_t *freq_size);
 int huffmanCompress(FILE *in_file, FILE *out_file);
 
 /* huffmanDecompress.c */
 void freeChar(void *data);
 int huffmanDecompress(FILE *in_file, FILE *out_file);
+
+/* huffmanEncode.c */
+void freeCodes(char **codes, size_t freq_size);
+int encodeText(char **codes, size_t freq_size, unsigned char *r_buff,
+	       size_t read_size, unsigned char *w_buff, bit_t *w_bit);
+void buildHuffmanCodes(binary_tree_node_t *h_tree, size_t depth,
+		       size_t *i, char *code, char **codes);
+int huffmanEncode(FILE *in_file, binary_tree_node_t *h_tree, size_t freq_size,
+		  unsigned char *w_buff, bit_t *w_bit);
 
 /* serialization.c */
 void huffmanSerialize(binary_tree_node_t *huffman_tree,

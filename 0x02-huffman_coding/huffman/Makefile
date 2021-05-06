@@ -47,6 +47,9 @@ huffmanCompress.o: ../heap/heap.h _huffman.h huffmanCompress.c
 huffmanDecompress.o: ../heap/heap.h _huffman.h huffmanDecompress.c
 	$(CC) -c $(CFLAGS) huffmanDecompress.c
 
+huffmanEncode.o: ../heap/heap.h _huffman.h huffmanEncode.c
+	$(CC) -c $(CFLAGS) huffmanEncode.c
+
 serialization.o: ../heap/heap.h _huffman.h serialization.c
 	$(CC) -c $(CFLAGS) serialization.c
 
@@ -70,6 +73,7 @@ huffman: ../heap/heap.h ../huffman.h _huffman.h \
 	huffman.o \
 	huffmanCompress.o \
 	huffmanDecompress.o \
+	huffmanEncode.o \
 	serialization.o \
 	_binary_tree_print.o \
 	read_write.o
@@ -87,6 +91,7 @@ huffman: ../heap/heap.h ../huffman.h _huffman.h \
 	huffman.o \
 	huffmanCompress.o \
 	huffmanDecompress.o \
+	huffmanEncode.o \
 	serialization.o \
 	_binary_tree_print.o \
 	read_write.o \
