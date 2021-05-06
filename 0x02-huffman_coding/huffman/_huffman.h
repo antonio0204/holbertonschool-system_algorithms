@@ -11,7 +11,8 @@
 #include <sys/stat.h>
 
 #define BUF_SIZE 1000
-#define CHAR_RANGE 256  /* extended ASCII, 128 for normal */
+/* 128 for ASCII text; 256 allows for extended ASCII or any byte sequence */
+#define CHAR_RANGE 256
 
 /**
  * struct bit_s - TBD
@@ -58,11 +59,12 @@ FILE *openOutputFile(char *output_path);
 /* int main(int argc, char *argv[]) */
 
 /* huffmanCompress.c */
-size_t *tallyFrequencies(FILE *in_file);
+size_t *tallyFrequencies(FILE *in_file, size_t in_file_size);
 int prepareTreeInputs(size_t *freqs, char **data,
 		      size_t **freq, size_t *freq_size);
-binary_tree_node_t *huffmanTreeFromText(FILE *in_file, size_t *freq_size);
-int huffmanCompress(FILE *in_file, FILE *out_file);
+binary_tree_node_t *huffmanTreeFromText(FILE *in_file, size_t *freq_size,
+					size_t in_file_size);
+int huffmanCompress(FILE *in_file, FILE *out_file, long int in_file_size);
 
 /* huffmanDecompress.c */
 void freeChar(void *data);
@@ -81,7 +83,7 @@ int huffmanEncode(FILE *in_file, binary_tree_node_t *h_tree, size_t freq_size,
 char *decodeSingleChar(binary_tree_node_t *h_tree,
 		       unsigned char *r_buff, bit_t *r_bit);
 int huffmanDecode(FILE *out_file, binary_tree_node_t *h_tree,
-		  huffman_header_t *header, long int input_file_size,
+		  huffman_header_t *header, size_t in_file_size,
 		  unsigned char *r_buff, bit_t *r_bit);
 
 /* serialization.c */

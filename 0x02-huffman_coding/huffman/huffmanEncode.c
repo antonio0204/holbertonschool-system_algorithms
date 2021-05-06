@@ -159,6 +159,7 @@ int huffmanEncode(FILE *in_file, binary_tree_node_t *h_tree, size_t freq_size,
 		free(code);
 		return (1);
 	}
+
 	buildHuffmanCodes(h_tree, 0, &i, code, codes);
 	free(code);
 	if (i != freq_size)
@@ -183,6 +184,7 @@ int huffmanEncode(FILE *in_file, binary_tree_node_t *h_tree, size_t freq_size,
 		freeCodes(codes, freq_size);
 		return (1);
 	}
+
 	freeCodes(codes, freq_size);
 	return (0);
 }

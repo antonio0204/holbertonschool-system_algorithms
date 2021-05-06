@@ -15,6 +15,7 @@
  * openInputFile - TBD
  *
  * @input_path: TBD
+ * @st: TBD
  * Return: TBD
  */
 FILE *openInputFile(char *input_path, struct stat *st)
@@ -112,10 +113,13 @@ int main(int argc, char *argv[])
 	}
 
 	if (argv[1][0] == 'c')
-		return (huffmanCompress(in_file, out_file));
+		ret_val = huffmanCompress(in_file, out_file,
+					  (long int)st.st_size);
+	else
+		/* off_t is defined as long int in sys/types.h */
+		ret_val = huffmanDecompress(in_file, out_file,
+					    (long int)st.st_size);
 
-	/* off_t is defined as long int in sys/types.h */
-        ret_val = huffmanDecompress(in_file, out_file, (long int)st.st_size);
 	fclose(in_file);
 	fclose(out_file);
 	return (ret_val);
