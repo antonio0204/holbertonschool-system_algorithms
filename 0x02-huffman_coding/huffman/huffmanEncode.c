@@ -43,11 +43,12 @@ int encodeText(char **codes, size_t freq_size, unsigned char *r_buff,
 	size_t i, j, k;
 	char *code = NULL;
 	int code_found;
+/*
 	static size_t ii;
-
+*/
 	if (!codes || !r_buff || !w_buff || !w_bit)
 		return (1);
-
+/*
 	if (ii == 0)
 	{
 		printf("encodeText: after writing tree: w_bit->byte_idx:%lu w_bit->bit_idx:%u\n",
@@ -56,7 +57,7 @@ int encodeText(char **codes, size_t freq_size, unsigned char *r_buff,
 		printf("w_buff[w_bit->byte_idx]:%x\n", w_buff[w_bit->byte_idx]);
 	}
 	ii++;
-
+*/
 	for (i = 0; i < read_size; i++)
 	{
 		code_found = 0;
@@ -111,7 +112,7 @@ void buildHuffmanCodes(binary_tree_node_t *h_tree, size_t depth,
 	{
 		symbol = (symbol_t *)(h_tree->data);
 
-		char_code = malloc(sizeof(char) * (strlen(code) + 2));
+		char_code = malloc(sizeof(char) * (depth + 2));
 		if (!char_code)
 		{
 			printf("buildHuffmanCodes: failed to assign code\n");
@@ -119,7 +120,8 @@ void buildHuffmanCodes(binary_tree_node_t *h_tree, size_t depth,
 		}
 
 		char_code[0] = symbol->data;
-		strcpy(char_code + 1, code);
+		strncpy(char_code + 1, code, depth);
+		char_code[depth + 1] = '\0';
 		codes[*i] = char_code;
 		(*i)++;
 		return;

@@ -58,14 +58,12 @@ int huffmanDecode(FILE *out_file, binary_tree_node_t *h_tree,
 	size_t i = 0, size_minus_header, read_bytes;
 
 	if (!out_file || !h_tree || !header || !r_buff || !r_bit)
-	{
-		printf("huffmanDecode: 1\n");
 		return (1);
-	}
+
 	size_minus_header = (size_t)input_file_size - sizeof(*header);
 
-	printf("huffmanDecode: size_minus_header:%lu header->hc_last_bit_i:%u\n",
-	       size_minus_header, header->hc_last_bit_i);
+	printf("huffmanDecode: size_minus_header:%lu header->hc_last_bit_i:%u header->hc_byte_offset:%u header->hc_first_bit_i:%u\n",
+	       size_minus_header, header->hc_last_bit_i, header->hc_byte_offset, header->hc_first_bit_i);
 
 	printf("huffmanDecode: r_bit->byte_idx:%lu r_bit->bit_idx:%u\n",
 	       r_bit->byte_idx, r_bit->bit_idx);
@@ -74,14 +72,9 @@ int huffmanDecode(FILE *out_file, binary_tree_node_t *h_tree,
 	       (r_bit->byte_idx == size_minus_header - 1 &&
 		r_bit->bit_idx < header->hc_last_bit_i))
 	{
-
-
 		c = decodeSingleChar(h_tree, r_buff, r_bit);
 		if (c == NULL)
-		{
-			printf("huffmanDecode: 2\n");
 			return (1);
-		}
 
 		w_buff[i] = *c;
 		i++;
@@ -92,10 +85,7 @@ int huffmanDecode(FILE *out_file, binary_tree_node_t *h_tree,
 
 			if (fwrite(w_buff, sizeof(unsigned char),
 				   1, out_file) != BUF_SIZE)
-			{
-				printf("huffmanDecode: 3\n");
 				return (1);
-			}
 
 			i = 0;
 			memset(w_buff, 0, BUF_SIZE);
