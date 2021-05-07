@@ -3,6 +3,7 @@
 /* free */
 #include <stdlib.h>
 
+#include <stdio.h>
 
 /**
  * huffmanSumNode - TBD
@@ -98,6 +99,5 @@ int huffman_extract_and_insert(heap_t *priority_queue)
 	sum_node->right = ex_node2;
 	ex_node2->parent = sum_node;
 
-	priority_queue->size--;
 	return (1);
 }

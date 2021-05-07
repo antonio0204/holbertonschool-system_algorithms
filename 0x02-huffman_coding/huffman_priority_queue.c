@@ -146,8 +146,6 @@ heap_t *huffman_priority_queue(char *data, size_t *freq, size_t size)
 			heap_delete(priority_queue, freeNestedNode);
 			return (NULL);
 		}
-
-		priority_queue->size++;
 	}
 
 	return (priority_queue);
