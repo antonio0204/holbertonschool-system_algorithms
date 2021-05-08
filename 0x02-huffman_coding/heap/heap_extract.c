@@ -125,14 +125,22 @@ void minHeapSiftDown(binary_tree_node_t *root,
 		return;
 
 	temp = root;
-	while (temp)
+	while (temp && temp->left)
 	{
-		/* *(temp->left->data) > *(temp->right->data) */
-		if ((temp->left && temp->right) &&
-		    data_cmp(temp->left->data, temp->right->data) > 0)
+		/* defaults to sifting down if parent == min child */
+		/* and to left if left == right */
+		if (!temp->right ||
+		    data_cmp(temp->left->data, temp->right->data) <= 0)
+		{
+			if (data_cmp(temp->data, temp->left->data) >= 0)
+				next = temp->left;
+			else
+				break;
+		}
+		else if (data_cmp(temp->data, temp->right->data) >= 0)
 			next = temp->right;
 		else
-			next = temp->left;
+			break;
 
 		if (next)
 		{
