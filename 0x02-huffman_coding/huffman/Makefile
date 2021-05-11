@@ -60,7 +60,7 @@ read_write.o: ../heap/heap.h _huffman.h read_write.c
 _binary_tree_print.o: ../_binary_tree_print.c
 	$(CC) -c $(CFLAGS) ../_binary_tree_print.c
 
-huffman: ../heap/heap.h ../huffman.h _huffman.h \
+all: ../heap/heap.h ../huffman.h _huffman.h \
 	heap_create.o \
 	binary_tree_node.o \
 	heap_insert.o \
