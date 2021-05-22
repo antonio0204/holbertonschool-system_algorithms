@@ -11,15 +11,14 @@
   *
   * @path: queue of visited map nodes, represents current backtracking
   *   solution candidate
-  * @x: x coordinate of last junction point
-  * @y: y coordinate of last junction point
+  * @last_fork: x coordinates of last junction point
   */
-void backtrackPath(queue_t *path, int x, int y)
+void backtrackPath(queue_t *path, const point_t *last_fork)
 {
 	queue_node_t *node = NULL;
 	point_t *point = NULL, *pop = NULL;
 
-	if (!path || !path->front || !path->back)
+	if (!path || !path->front || !path->back || !last_fork)
 		return;
 
 	node = path->front;
@@ -27,7 +26,7 @@ void backtrackPath(queue_t *path, int x, int y)
 		point = (point_t *)node->ptr;
 
 	while (node && point &&
-	       !(point->x == x && point->y == y))
+	       !(point->x == last_fork->x && point->y == last_fork->y))
 	{
 		pop = (point_t *)dequeue(path);
 		if (pop)
@@ -41,7 +40,8 @@ void backtrackPath(queue_t *path, int x, int y)
 			path->back = NULL;
 
 		node = path->front;
-		point = node ? (point_t *)(node->ptr) : NULL;
+		if (node)
+			point = (point_t *)node->ptr;
 	}
 }
 
@@ -81,6 +81,17 @@ queue_node_t *mapPointInQueue(queue_t *queue, const point_t *point)
 }
 
 
+/**
+  * isValidStep - validates next possible step in a maze map grid
+  *
+  * @path: queue of nodes visited, represents current candidate solution
+  * @map: pointer to a read-only two-dimensional array (0 represents a
+  *   walkable cell, 1 represents a blocked cell)
+  * @rows: count of rows in map
+  * @cols: count of columns in map
+  * @step: coordinates of potential next map cell
+  * Return: 1 if step is valid, 0 if not or failure
+  */
 int isValidStep(queue_t *path, char **map, int rows, int cols,
 		const point_t *step)
 {
@@ -114,50 +125,48 @@ int isValidStep(queue_t *path, char **map, int rows, int cols,
   *   walkable cell, 1 represents a blocked cell)
   * @rows: count of rows in map
   * @cols: count of columns in map
-  * @curr_x: x coordinate of current map cell
-  * @curr_y: y coordinate of current map cell
+  * @curr: coordinates of current map cell
   * @target: coordinates of the target point
   * Return: 1 if target found in current recursion frame, 0 if not or failure
   */
 int floodFillMaze(queue_t *path, char **map, int rows, int cols,
-		   int curr_x, int curr_y, const point_t *target)
+		  const point_t *curr, const point_t *target)
 {
-	point_t *curr = NULL;
+	point_t *new = NULL;
 	point_t next_step[4] = { {+1, 0}, {0, +1}, {-1, 0}, {0, -1} };
 	int i, target_found = 0;
 
-	if (!path || !map || !rows || !cols || !target)
+	if (!path || !map || !rows || !cols || !curr || !target)
 		return (0);
 
 	for (i = 0; i < 4; i++)
 	{
-		next_step[i].x += curr_x;
-		next_step[i].y += curr_y;
+		next_step[i].x += curr->x;
+		next_step[i].y += curr->y;
 	}
-	printf("Checking coordinates [%i, %i]\n", curr_x, curr_y);
+	printf("Checking coordinates [%i, %i]\n", curr->x, curr->y);
 
-	curr = malloc(sizeof(point_t));
-	if (!curr)
+	new = malloc(sizeof(point_t));
+	if (!new)
 		return (0);
-	curr->x = curr_x;
-	curr->y = curr_y;
-	if (!queue_push_front(path, (void *)curr))
+	new->x = curr->x;
+	new->y = curr->y;
+	if (!queue_push_front(path, (void *)new))
 	{
-		free(curr);
+		free(new);
 		return (0);
 	}
 
-	if (curr_x == target->x && curr_y == target->y)
+	if (curr->x == target->x && curr->y == target->y)
 		return (1);
 	for (i = 0; !target_found && i < 4; i++)
 	{
 		if (isValidStep(path, map, rows, cols, next_step + i))
 		{
 			target_found |= floodFillMaze(path, map, rows, cols,
-						      next_step[i].x,
-						      next_step[i].y, target);
+						      next_step + i, target);
 			if (!target_found)
-				backtrackPath(path, curr_x, curr_y);
+				backtrackPath(path, curr);
 		}
 	}
 
@@ -192,7 +201,7 @@ queue_t *backtracking_array(char **map, int rows, int cols,
 	if (!path)
 		return (NULL);
 
-	if (!floodFillMaze(path, map, rows, cols, start->x, start->y, target))
+	if (!floodFillMaze(path, map, rows, cols, start, target))
 	{
 		/* assumes that free() can be used with node data */
 		queue_delete(path);
