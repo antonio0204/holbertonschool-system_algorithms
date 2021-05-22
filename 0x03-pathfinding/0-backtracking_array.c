@@ -21,25 +21,27 @@ void backtrackPath(queue_t *path, const point_t *last_fork)
 	if (!path || !path->front || !path->back || !last_fork)
 		return;
 
-	node = path->front;
+	node = path->back;
 	if (node)
 		point = (point_t *)node->ptr;
 
 	while (node && point &&
 	       !(point->x == last_fork->x && point->y == last_fork->y))
 	{
-		pop = (point_t *)dequeue(path);
+		/* dequeue from back */
+		node = path->back;
+		if (node && node->prev)
+			node->prev->next = NULL;
+		path->back = node->prev;
+		if (path->back == NULL)
+			path->front = NULL;
+
+		pop = (point_t *)(node->ptr);
+		free(node);
 		if (pop)
 			free(pop);
 
-		/*
-		 * dequeue does not set path->back in the edge case of
-		 * popping the head of a queue with only 1 member
-		 */
-		if (path->front == NULL)
-			path->back = NULL;
-
-		node = path->front;
+		node = path->back;
 		if (node)
 			point = (point_t *)node->ptr;
 	}
@@ -151,7 +153,7 @@ int floodFillMaze(queue_t *path, char **map, int rows, int cols,
 		return (0);
 	new->x = curr->x;
 	new->y = curr->y;
-	if (!queue_push_front(path, (void *)new))
+	if (!queue_push_back(path, (void *)new))
 	{
 		free(new);
 		return (0);
@@ -192,7 +194,6 @@ queue_t *backtracking_array(char **map, int rows, int cols,
 			    point_t const *start, point_t const *target)
 {
 	queue_t *path = NULL;
-	queue_node_t *temp = NULL, *swap = NULL;
 
 	if (!map || !rows || !cols || !start || !target)
 		return (NULL);
@@ -206,19 +207,6 @@ queue_t *backtracking_array(char **map, int rows, int cols,
 		/* assumes that free() can be used with node data */
 		queue_delete(path);
 		return (NULL);
-	}
-
-	/* reverse path */
-	temp = path->front;
-	swap = path->front;
-	path->front = path->back;
-	path->back = swap;
-	while (temp)
-	{
-		swap = temp->next;
-		temp->next = temp->prev;
-		temp->prev = swap;
-		temp = temp->prev;
 	}
 
 	return (path);
