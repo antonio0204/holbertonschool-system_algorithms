@@ -11,12 +11,12 @@
   *
   * @path: queue of visited map nodes, represents current backtracking
   *   solution candidate
-  * @last_fork: x coordinates of last junction point
+  * @last_fork: coordinates of last junction point
   */
 void backtrackPath(queue_t *path, const point_t *last_fork)
 {
 	queue_node_t *node = NULL;
-	point_t *point = NULL, *pop = NULL;
+	point_t *point = NULL;
 
 	if (!path || !path->front || !path->back || !last_fork)
 		return;
@@ -29,17 +29,14 @@ void backtrackPath(queue_t *path, const point_t *last_fork)
 	       !(point->x == last_fork->x && point->y == last_fork->y))
 	{
 		/* dequeue from back */
-		node = path->back;
 		if (node && node->prev)
 			node->prev->next = NULL;
 		path->back = node->prev;
 		if (path->back == NULL)
 			path->front = NULL;
 
-		pop = (point_t *)(node->ptr);
 		free(node);
-		if (pop)
-			free(pop);
+		free(point);
 
 		node = path->back;
 		if (node)
