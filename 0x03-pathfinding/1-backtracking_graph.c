@@ -88,20 +88,18 @@ queue_node_t *isVisitedVertex(queue_t *path, const vertex_t *vertex)
   *   graph using a recursive depth-first search
   *
   * @path: queue of nodes visited, represents current candidate solution
-  * @graph: pointer to graph to traverse
   * @curr: current vertex in graph
   * @target: target vertex in graph
   * Return: 1 if target found at or below current recursion frame,
   *   0 if not or failure
   */
-int graphDFS(queue_t *path, graph_t *graph,
-	     const vertex_t *curr, const vertex_t *target)
+int graphDFS(queue_t *path, const vertex_t *curr, const vertex_t *target)
 {
 	char *content_copy = NULL;
 	int target_found = 0;
 	edge_t *temp_e = NULL;
 
-	if (!path || !graph || !curr || !target)
+	if (!path || !curr || !target)
 		return (0);
 
 	printf("Checking %s\n", curr->content);
@@ -126,8 +124,7 @@ int graphDFS(queue_t *path, graph_t *graph,
 	{
 		if (!isVisitedVertex(path, temp_e->dest))
 		{
-			target_found |= graphDFS(path, graph,
-						temp_e->dest, target);
+			target_found |= graphDFS(path, temp_e->dest, target);
 
 			if (!target_found)
 				backtrackPath(path, curr);
@@ -153,14 +150,15 @@ queue_t *backtracking_graph(graph_t *graph, vertex_t const *start,
 {
 	queue_t *path = NULL;
 
-	if (!graph || !start || !target)
+	if (!graph || !graph->nb_vertices || !graph->vertices ||
+	    !start || !target)
 		return (NULL);
 
 	path = queue_create();
 	if (!path)
 		return (NULL);
 
-	if (!graphDFS(path, graph, start, target))
+	if (!graphDFS(path, start, target))
 	{
 		/* assumes that free() can be used with node data */
 		queue_delete(path);
