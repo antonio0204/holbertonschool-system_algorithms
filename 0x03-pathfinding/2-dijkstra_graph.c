@@ -5,37 +5,74 @@
 #include <stdio.h>
 /* strcmp strdup */
 #include <string.h>
-
 /* ULONG_MAX */
 #include <limits.h>
 
 
-typedef struct dijkstra_vertex_s {
-	vertex_t *vertex;
-	size_t cml_weight;
-	vertex_t *path_via;
-} dijkstra_vertex_t;
-
-
-
-
-int isVertexFinished(const dijkstra_vertex_t *D_queue, size_t Dq_head_i, const vertex_t *vertex)
+/**
+  * pathFromDijkstraQueue - once a Dijkstra priority queue has been populated
+  *   by traversing the graph, this function works backwards through the
+  *   priority queue to build a solution queue by following the path_via
+  *   pointers from target to start
+  *
+  * @d_queue: finished Dijkstra priority queue
+  * @target_i: index of target vertex in priority queue
+  * Return: queue containing the content strings from each node in the graph
+  *   from start to target, or NULL on failure
+  */
+queue_t *pathFromDijkstraQueue(dijkstra_vertex_t *d_queue,
+			       size_t target_i)
 {
-	size_t i;
+	queue_t *path = NULL;
+	vertex_t *via = NULL;
+	char *via_name = NULL;
+	long int i;
 
-	if (!D_queue || !vertex)
-		return (0);
+	if (!d_queue)
+		return (NULL);
 
-	for (i = 0; i < Dq_head_i; i++)
+	path = queue_create();
+	if (!path)
+		return (NULL);
+
+	via_name = strdup(d_queue[target_i].vertex->content);
+	queue_push_front(path, (void *)via_name);
+	via = d_queue[target_i].path_via;
+
+	for (i = target_i; i >= 0; i--)
 	{
-		if (strcmp(vertex->content, D_queue[i].vertex->content) == 0)
-			return (1);
+		if (d_queue[i].vertex == via)
+		{
+			via_name = strdup(d_queue[i].vertex->content);
+			queue_push_front(path, (void *)via_name);
+			via = d_queue[i].path_via;
+		}
 	}
 
-	return (0);
+	if (via != NULL) /* no contiguous path from target to start */
+	{
+		while (path->front)
+			free(dequeue(path));
+		queue_delete(path);
+		path = NULL;
+	}
+
+	return (path);
 }
 
 
+/**
+  * compareWeights - intended for use with qsort(), sorts members of the
+  *   Dijkstra priority queue by their cumulative weights (made into stable
+  *   sort by using pointer values as tiebreaker)
+  *
+  * @param1: void pointer due to function prototype expected by qsort(),
+  *   expected to be castable to dijkstra_vertex *
+  * @param2: void pointer due to function prototype expected by qsort(),
+  *   expected to be castable to dijkstra_vertex *
+  * Return: 1 if param1 should be ordered first, -1 if param2 is first,
+  *   or 0 if they are the same
+  */
 int compareWeights(const void *param1, const void *param2)
 {
 	dijkstra_vertex_t *D_vert1 = NULL, *D_vert2 = NULL;
@@ -50,8 +87,7 @@ int compareWeights(const void *param1, const void *param2)
 	D_vert1 = (dijkstra_vertex_t *)param1;
 	D_vert2 = (dijkstra_vertex_t *)param2;
 
-	/* stabilize sort by using pointer values as tiebreaker? */
-
+	/* stabilizes sort by using pointer values in array as tiebreaker */
 	if (D_vert1->cml_weight > D_vert2->cml_weight)
 		return (1);
 	else if (D_vert1->cml_weight < D_vert2->cml_weight)
@@ -65,6 +101,20 @@ int compareWeights(const void *param1, const void *param2)
 }
 
 
+/**
+  * dijkstraGraph - updates an array-based priority queue to find smallest
+  *   cumulative weights and optimal previous vertex for each vertex in a graph
+  *
+  * @d_queue: array of structs containing current vertex, cumulative weight,
+  *   previous vertex in current optimal route
+  * @nb_vertices: total amount of vertices in graph
+  * @start: pointer to starting vertex
+  * @target: pointer to target vertex
+  * @dq_head_i: index in d_queue that marks the current head of the priority
+  *   queue; any indexes lower than this in the array have finished assessment
+  * @target_i: once assessment of the graph is complete and the target is
+  *   found, this is updated to the final index of the target vertex in d_queue
+  */
 void dijkstraGraph(dijkstra_vertex_t *d_queue, size_t nb_vertices,
 		   const vertex_t *start, const vertex_t *target,
 		   size_t dq_head_i, size_t *target_i)
@@ -75,28 +125,14 @@ void dijkstraGraph(dijkstra_vertex_t *d_queue, size_t nb_vertices,
 
 	if (!d_queue || !start || !target || !target_i)
 		return;
-
-	printf("d_queue on entry:\n");
-	for (i = dq_head_i; i < nb_vertices; i++)
-		printf("dijkstra_queue[%lu] %s %lu %s\n", i,
-		       d_queue[i].vertex->content,
-		       d_queue[i].cml_weight,
-		       d_queue[i].path_via ? d_queue[i].path_via->content : NULL);
-
 	dq_head = d_queue[dq_head_i];
 	printf("Checking %s, distance from Seattle is %lu\n",
 	       dq_head.vertex->content, dq_head.cml_weight);
-
 	for (temp_e = dq_head.vertex->edges; temp_e; temp_e = temp_e->next)
 	{
 		if (dq_head.path_via && strcmp(temp_e->dest->content,
 					       dq_head.path_via->content) == 0)
 			continue;
-/*
-		if (isVertexFinished(d_queue, dq_head_i, temp_e->dest))
-			continue;
-*/
-
 		for (i = dq_head_i; i < nb_vertices; i++)
 		{
 			if (strcmp(temp_e->dest->content,
@@ -105,36 +141,26 @@ void dijkstraGraph(dijkstra_vertex_t *d_queue, size_t nb_vertices,
 				if (dq_head.cml_weight + temp_e->weight <
 				    d_queue[i].cml_weight)
 				{
-					d_queue[i].cml_weight = dq_head.cml_weight + temp_e->weight;
+					d_queue[i].cml_weight =
+						dq_head.cml_weight +
+						temp_e->weight;
 					d_queue[i].path_via = dq_head.vertex;
 				}
 			}
 		}
 	}
-
 	qsort((void *)(d_queue + dq_head_i), nb_vertices - dq_head_i,
 	      sizeof(dijkstra_vertex_t), compareWeights);
-
-	printf("d_queue on exit:\n");
-	for (i = dq_head_i; i < nb_vertices; i++)
-		printf("dijkstra_queue[%lu] %s %lu %s\n", i,
-		       d_queue[i].vertex->content,
-		       d_queue[i].cml_weight,
-		       d_queue[i].path_via ? d_queue[i].path_via->content : NULL);
-
 	if (strcmp(target->content, dq_head.vertex->content) == 0)
 	{
 		*target_i = dq_head_i;
 		return;
 	}
-
 	if (dq_head_i == nb_vertices - 1)
 		return;
-
 	dijkstraGraph(d_queue, nb_vertices, start, target,
 		      dq_head_i + 1, target_i);
 }
-
 
 
 /**
@@ -144,21 +170,17 @@ void dijkstraGraph(dijkstra_vertex_t *d_queue, size_t nb_vertices,
   * @graph: pointer to the graph to traverse
   * @start: pointer to starting vertex
   * @target: pointer to target vertex
-  * Return: returns a queue in which each node is a `char *` corresponding to a
+  * Return: returns a queue in which each node is a `char *` corresponding to
   *   vertex, forming a path from start to target, or NULL on failure
   */
 queue_t *dijkstra_graph(graph_t *graph, vertex_t const *start,
 			vertex_t const *target)
 {
-        dijkstra_vertex_t *dijkstra_queue = NULL;
-	vertex_t *temp_v = NULL, *via = NULL;
+	dijkstra_vertex_t *dijkstra_queue = NULL;
+	vertex_t *temp_v = NULL;
 	size_t i, target_i;
 	queue_t *path = NULL;
 
-	long int j;
-/*
-	queue_node_t *temp_qn = NULL;
-*/
 	if (!graph || !graph->nb_vertices || !graph->vertices ||
 	    !start || !target)
 		return (NULL);
@@ -177,9 +199,6 @@ queue_t *dijkstra_graph(graph_t *graph, vertex_t const *start,
 		else
 			dijkstra_queue[i].cml_weight = ULONG_MAX;
 
-		if (strcmp(target->content, temp_v->content) == 0)
-			target_i = i;
-
 		dijkstra_queue[i].path_via = NULL;
 	}
 
@@ -189,46 +208,8 @@ queue_t *dijkstra_graph(graph_t *graph, vertex_t const *start,
 	dijkstraGraph(dijkstra_queue, graph->nb_vertices,
 		      start, target, 0, &target_i);
 
-	printf("\n\ndijkstra_queue after recursion\n");
-	for (i = 0; i < graph->nb_vertices; i++)
-		printf("dijkstra_queue[%lu] %s %lu %s\n", i,
-		       dijkstra_queue[i].vertex->content,
-		       dijkstra_queue[i].cml_weight,
-		       dijkstra_queue[i].path_via ? dijkstra_queue[i].path_via->content : NULL);
-
 	/* assemble path backwards from dijkstra_queue */
-	path = queue_create();
-	if (!path)
-		return (NULL);
-
-	queue_push_front(path,
-			 (void *)strdup(dijkstra_queue[target_i].vertex->content));
-	via = dijkstra_queue[target_i].path_via;
-
-	for (j = target_i; j >= 0; j--)
-	{
-		if (dijkstra_queue[j].vertex == via)
-		{
-			queue_push_front(path,
-					 (void *)strdup(dijkstra_queue[j].vertex->content));
-			via = dijkstra_queue[j].path_via;
-		}
-	}
-/*
-	printf("path before return: \n");
-	for (temp_qn = path->front; temp_qn; temp_qn = temp_qn->next)
-		printf("%s ", (char *)(temp_qn->ptr));
-	putchar('\n');
-*/
-	via = dijkstra_queue[target_i].path_via;
-
-	if (via != NULL) /* no contiguous path from target to start */
-	{
-		while (path->front)
-			free(dequeue(path));
-		queue_delete(path);
-		path = NULL;
-	}
+	path = pathFromDijkstraQueue(dijkstra_queue, target_i);
 
 	free(dijkstra_queue);
 	return (path);
