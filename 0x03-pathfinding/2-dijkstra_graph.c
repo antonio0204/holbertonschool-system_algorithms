@@ -66,9 +66,9 @@ queue_t *pathFromDijkstraQueue(dijkstra_vertex_t *d_queue,
   *   Dijkstra priority queue by their cumulative weights (made into stable
   *   sort by using pointer values as tiebreaker)
   *
-  * @param1: void pointer due to function prototype expected by qsort(),
+  * @param1: void * due to function prototype expected by qsort(),
   *   expected to be castable to dijkstra_vertex *
-  * @param2: void pointer due to function prototype expected by qsort(),
+  * @param2: void * due to function prototype expected by qsort(),
   *   expected to be castable to dijkstra_vertex *
   * Return: 1 if param1 should be ordered first, -1 if param2 is first,
   *   or 0 if they are the same
@@ -102,6 +102,57 @@ int compareWeights(const void *param1, const void *param2)
 
 
 /**
+  * assessEdges - finds smallest cumulative weights and optimal previous vertex
+  *   for each edge of the current head of the priority queue
+  *
+  * @d_queue: array of structs containing current vertex, cumulative weight,
+  *   previous vertex in current optimal route
+  * @nb_vertices: total amount of vertices in graph
+  * @dq_head_i: index in d_queue that marks the current head of the priority
+  *   queue; any indexes lower than this in the array have finished assessment
+  */
+void assessEdges(dijkstra_vertex_t *d_queue, size_t nb_vertices,
+		 size_t dq_head_i)
+{
+	dijkstra_vertex_t dq_head;
+	edge_t *temp_e = NULL;
+	size_t i;
+
+	if (!d_queue)
+		return;
+
+	dq_head = d_queue[dq_head_i];
+
+	for (temp_e = dq_head.vertex->edges; temp_e; temp_e = temp_e->next)
+	{
+		if (dq_head.path_via && strcmp(temp_e->dest->content,
+					       dq_head.path_via->content) == 0)
+			continue;
+
+		for (i = dq_head_i; i < nb_vertices; i++)
+		{
+			if (strcmp(temp_e->dest->content,
+				   d_queue[i].vertex->content) == 0)
+			{
+				if (dq_head.cml_weight + temp_e->weight <
+				    d_queue[i].cml_weight)
+				{
+					d_queue[i].cml_weight =
+						dq_head.cml_weight +
+						temp_e->weight;
+
+					d_queue[i].path_via = dq_head.vertex;
+				}
+			}
+		}
+	}
+
+	qsort((void *)(d_queue + dq_head_i), nb_vertices - dq_head_i,
+	      sizeof(dijkstra_vertex_t), compareWeights);
+}
+
+
+/**
   * dijkstraGraph - updates an array-based priority queue to find smallest
   *   cumulative weights and optimal previous vertex for each vertex in a graph
   *
@@ -120,44 +171,25 @@ void dijkstraGraph(dijkstra_vertex_t *d_queue, size_t nb_vertices,
 		   size_t dq_head_i, size_t *target_i)
 {
 	dijkstra_vertex_t dq_head;
-	edge_t *temp_e = NULL;
-	size_t i;
 
 	if (!d_queue || !start || !target || !target_i)
 		return;
+
 	dq_head = d_queue[dq_head_i];
 	printf("Checking %s, distance from Seattle is %lu\n",
 	       dq_head.vertex->content, dq_head.cml_weight);
-	for (temp_e = dq_head.vertex->edges; temp_e; temp_e = temp_e->next)
-	{
-		if (dq_head.path_via && strcmp(temp_e->dest->content,
-					       dq_head.path_via->content) == 0)
-			continue;
-		for (i = dq_head_i; i < nb_vertices; i++)
-		{
-			if (strcmp(temp_e->dest->content,
-				   d_queue[i].vertex->content) == 0)
-			{
-				if (dq_head.cml_weight + temp_e->weight <
-				    d_queue[i].cml_weight)
-				{
-					d_queue[i].cml_weight =
-						dq_head.cml_weight +
-						temp_e->weight;
-					d_queue[i].path_via = dq_head.vertex;
-				}
-			}
-		}
-	}
-	qsort((void *)(d_queue + dq_head_i), nb_vertices - dq_head_i,
-	      sizeof(dijkstra_vertex_t), compareWeights);
+
+	assessEdges(d_queue, nb_vertices, dq_head_i);
+
 	if (strcmp(target->content, dq_head.vertex->content) == 0)
 	{
 		*target_i = dq_head_i;
 		return;
 	}
+
 	if (dq_head_i == nb_vertices - 1)
 		return;
+
 	dijkstraGraph(d_queue, nb_vertices, start, target,
 		      dq_head_i + 1, target_i);
 }
