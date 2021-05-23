@@ -6,8 +6,6 @@
 /* strcmp strdup */
 #include <string.h>
 
-#include <unistd.h>
-
 
 /**
   * backtrackPath - deletes record of path traveled from dead end back to last
@@ -20,7 +18,7 @@
 void backtrackPath(queue_t *path, const vertex_t *last_fork)
 {
 	queue_node_t *node = NULL;
-        char *vertex_content = NULL;
+	char *vertex_content = NULL;
 
 	if (!path || !path->front || !path->back || !last_fork)
 		return;
@@ -44,7 +42,7 @@ void backtrackPath(queue_t *path, const vertex_t *last_fork)
 
 		node = path->back;
 		if (node)
-		        vertex_content = (char *)node->ptr;
+			vertex_content = (char *)node->ptr;
 	}
 }
 
@@ -61,7 +59,7 @@ void backtrackPath(queue_t *path, const vertex_t *last_fork)
 queue_node_t *isVisitedVertex(queue_t *path, const vertex_t *vertex)
 {
 	queue_node_t *temp = NULL;
-        char *vertex_content = NULL;
+	char *vertex_content = NULL;
 
 	if (!path || !path->front || !path->back || !vertex)
 		return (NULL);
@@ -71,7 +69,7 @@ queue_node_t *isVisitedVertex(queue_t *path, const vertex_t *vertex)
 	{
 		if (temp->ptr)
 		{
-		        vertex_content = (char *)temp->ptr;
+			vertex_content = (char *)temp->ptr;
 
 			if (strcmp(vertex->content, vertex_content) == 0)
 				return (temp);
@@ -99,12 +97,9 @@ queue_node_t *isVisitedVertex(queue_t *path, const vertex_t *vertex)
 int graphDFS(queue_t *path, graph_t *graph,
 	     const vertex_t *curr, const vertex_t *target)
 {
-        char *content_copy = NULL;
+	char *content_copy = NULL;
 	int target_found = 0;
 	edge_t *temp_e = NULL;
-
-	queue_node_t *temp = NULL;
-        char *vertex_content = NULL;
 
 	if (!path || !graph || !curr || !target)
 		return (0);
@@ -117,32 +112,16 @@ int graphDFS(queue_t *path, graph_t *graph,
 		perror("graphDFS: strdup");
 		return (0);
 	}
-
 	if (!queue_push_back(path, (void *)content_copy))
 	{
-		printf("\tqueue_push_back fail for %s\n", content_copy);
 		free(content_copy);
 		return (0);
 	}
 
-	printf("\tvisited updates to: ");
-	temp = path->front;
-	while (temp)
-	{
-		if (temp->ptr)
-		{
-		        vertex_content = (char *)temp->ptr;
-			printf("%s ", vertex_content);
-		}
-
-		temp = temp->next;
-	}
-	putchar('\n');
-
 	if (strcmp(curr->content, target->content) == 0)
 		return (1);
 
-	for (temp_e = curr->edges; !target_found && temp_e && temp_e->next;
+	for (temp_e = curr->edges; !target_found && temp_e;
 	     temp_e = temp_e->next)
 	{
 		if (!isVisitedVertex(path, temp_e->dest))
