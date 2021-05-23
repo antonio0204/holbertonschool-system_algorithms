@@ -65,68 +65,74 @@ int compareWeights(const void *param1, const void *param2)
 }
 
 
-int dijkstraGraph(dijkstra_vertex_t *D_queue, size_t nb_vertices,
-		  const vertex_t *start, const vertex_t *target,
-		  size_t *target_i)
+void dijkstraGraph(dijkstra_vertex_t *d_queue, size_t nb_vertices,
+		   const vertex_t *start, const vertex_t *target,
+		   size_t dq_head_i, size_t *target_i)
 {
-	static size_t Dq_head_i;
-	dijkstra_vertex_t Dq_head;
+	dijkstra_vertex_t dq_head;
 	edge_t *temp_e = NULL;
 	size_t i;
 
-	if (!D_queue || !start || !target || !target_i)
-		return (0);
+	if (!d_queue || !start || !target || !target_i)
+		return;
 
-	printf("D_queue on entry:\n");
-	for (i = Dq_head_i; i < nb_vertices; i++)
+	printf("d_queue on entry:\n");
+	for (i = dq_head_i; i < nb_vertices; i++)
 		printf("dijkstra_queue[%lu] %s %lu %s\n", i,
-		       D_queue[i].vertex->content,
-		       D_queue[i].cml_weight,
-		       D_queue[i].path_via ? D_queue[i].path_via->content : NULL);
+		       d_queue[i].vertex->content,
+		       d_queue[i].cml_weight,
+		       d_queue[i].path_via ? d_queue[i].path_via->content : NULL);
 
-	Dq_head = D_queue[Dq_head_i];
+	dq_head = d_queue[dq_head_i];
 	printf("Checking %s, distance from Seattle is %lu\n",
-	       Dq_head.vertex->content, Dq_head.cml_weight);
+	       dq_head.vertex->content, dq_head.cml_weight);
 
-	for (temp_e = Dq_head.vertex->edges; temp_e; temp_e = temp_e->next)
+	for (temp_e = dq_head.vertex->edges; temp_e; temp_e = temp_e->next)
 	{
-		if (Dq_head.path_via && strcmp(temp_e->dest->content,
-					       Dq_head.path_via->content) == 0)
+		if (dq_head.path_via && strcmp(temp_e->dest->content,
+					       dq_head.path_via->content) == 0)
 			continue;
 /*
-		if (isVertexFinished(D_queue, Dq_head_i, temp_e->dest))
+		if (isVertexFinished(d_queue, dq_head_i, temp_e->dest))
 			continue;
 */
 
-		for (i = Dq_head_i; i < nb_vertices; i++)
+		for (i = dq_head_i; i < nb_vertices; i++)
 		{
 			if (strcmp(temp_e->dest->content,
-				   D_queue[i].vertex->content) == 0)
+				   d_queue[i].vertex->content) == 0)
 			{
-				if (Dq_head.cml_weight + temp_e->weight <
-				    D_queue[i].cml_weight)
+				if (dq_head.cml_weight + temp_e->weight <
+				    d_queue[i].cml_weight)
 				{
-					D_queue[i].cml_weight = Dq_head.cml_weight + temp_e->weight;
-					D_queue[i].path_via = Dq_head.vertex;
+					d_queue[i].cml_weight = dq_head.cml_weight + temp_e->weight;
+					d_queue[i].path_via = dq_head.vertex;
 				}
 			}
 		}
 	}
 
-	/* add current to "finished" section */
-	Dq_head_i++;
-	qsort((void *)(D_queue + Dq_head_i), nb_vertices - Dq_head_i,
+	qsort((void *)(d_queue + dq_head_i), nb_vertices - dq_head_i,
 	      sizeof(dijkstra_vertex_t), compareWeights);
 
-	printf("D_queue on exit:\n");
-	for (i = Dq_head_i; i < nb_vertices; i++)
+	printf("d_queue on exit:\n");
+	for (i = dq_head_i; i < nb_vertices; i++)
 		printf("dijkstra_queue[%lu] %s %lu %s\n", i,
-		       D_queue[i].vertex->content,
-		       D_queue[i].cml_weight,
-		       D_queue[i].path_via ? D_queue[i].path_via->content : NULL);
+		       d_queue[i].vertex->content,
+		       d_queue[i].cml_weight,
+		       d_queue[i].path_via ? d_queue[i].path_via->content : NULL);
 
-	(void)target_i;
-	return (0);
+	if (strcmp(target->content, dq_head.vertex->content) == 0)
+	{
+		*target_i = dq_head_i;
+		return;
+	}
+
+	if (dq_head_i == nb_vertices - 1)
+		return;
+
+	dijkstraGraph(d_queue, nb_vertices, start, target,
+		      dq_head_i + 1, target_i);
 }
 
 
@@ -147,6 +153,7 @@ queue_t *dijkstra_graph(graph_t *graph, vertex_t const *start,
         dijkstra_vertex_t *dijkstra_queue = NULL;
 	vertex_t *temp_v = NULL;
 	size_t i, target_i;
+	queue_t *path = NULL;
 
 	if (!graph || !graph->nb_vertices || !graph->vertices ||
 	    !start || !target)
@@ -174,27 +181,34 @@ queue_t *dijkstra_graph(graph_t *graph, vertex_t const *start,
 
 	qsort((void *)dijkstra_queue, graph->nb_vertices,
 	      sizeof(dijkstra_vertex_t), compareWeights);
-/*
+
+	dijkstraGraph(dijkstra_queue, graph->nb_vertices,
+		      start, target, 0, &target_i);
+
+	printf("\n\ndijkstra_queue after recursion\n");
 	for (i = 0; i < graph->nb_vertices; i++)
 		printf("dijkstra_queue[%lu] %s %lu %s\n", i,
 		       dijkstra_queue[i].vertex->content,
 		       dijkstra_queue[i].cml_weight,
 		       dijkstra_queue[i].path_via ? dijkstra_queue[i].path_via->content : NULL);
-*/
-	if (!dijkstraGraph(dijkstra_queue, graph->nb_vertices,
-			   start, target, &target_i))
+
+/*
 	{
 		free(dijkstra_queue);
 		return (NULL);
 	}
-
+*/
+/* assemble path backwards from dijkstra_queue */
 /*
-  assemble path backwards from dijkstra_queue
 	path = queue_create();
 	if (!path)
 		return (NULL);
 
-	return (path);
+	queue_push_front(path, (void *));
+
+	for (i = 0; i < graph->nb_vertices; i++)
+	{
+	}
 */
-	return (NULL);
+	return (path);
 }
