@@ -151,10 +151,14 @@ queue_t *dijkstra_graph(graph_t *graph, vertex_t const *start,
 			vertex_t const *target)
 {
         dijkstra_vertex_t *dijkstra_queue = NULL;
-	vertex_t *temp_v = NULL;
+	vertex_t *temp_v = NULL, *via = NULL;
 	size_t i, target_i;
 	queue_t *path = NULL;
 
+	long int j;
+/*
+	queue_node_t *temp_qn = NULL;
+*/
 	if (!graph || !graph->nb_vertices || !graph->vertices ||
 	    !start || !target)
 		return (NULL);
@@ -192,23 +196,40 @@ queue_t *dijkstra_graph(graph_t *graph, vertex_t const *start,
 		       dijkstra_queue[i].cml_weight,
 		       dijkstra_queue[i].path_via ? dijkstra_queue[i].path_via->content : NULL);
 
-/*
-	{
-		free(dijkstra_queue);
-		return (NULL);
-	}
-*/
-/* assemble path backwards from dijkstra_queue */
-/*
+	/* assemble path backwards from dijkstra_queue */
 	path = queue_create();
 	if (!path)
 		return (NULL);
 
-	queue_push_front(path, (void *));
+	queue_push_front(path,
+			 (void *)strdup(dijkstra_queue[target_i].vertex->content));
+	via = dijkstra_queue[target_i].path_via;
 
-	for (i = 0; i < graph->nb_vertices; i++)
+	for (j = target_i; j >= 0; j--)
 	{
+		if (dijkstra_queue[j].vertex == via)
+		{
+			queue_push_front(path,
+					 (void *)strdup(dijkstra_queue[j].vertex->content));
+			via = dijkstra_queue[j].path_via;
+		}
 	}
+/*
+	printf("path before return: \n");
+	for (temp_qn = path->front; temp_qn; temp_qn = temp_qn->next)
+		printf("%s ", (char *)(temp_qn->ptr));
+	putchar('\n');
 */
+	via = dijkstra_queue[target_i].path_via;
+
+	if (via != NULL) /* no contiguous path from target to start */
+	{
+		while (path->front)
+			free(dequeue(path));
+		queue_delete(path);
+		path = NULL;
+	}
+
+	free(dijkstra_queue);
 	return (path);
 }
