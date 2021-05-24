@@ -160,7 +160,8 @@ queue_t *backtracking_graph(graph_t *graph, vertex_t const *start,
 
 	if (!graphDFS(path, start, target))
 	{
-		/* assumes that free() can be used with node data */
+		while (path->front)
+			free(dequeue(path));
 		queue_delete(path);
 		return (NULL);
 	}
