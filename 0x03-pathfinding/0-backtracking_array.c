@@ -201,7 +201,8 @@ queue_t *backtracking_array(char **map, int rows, int cols,
 
 	if (!floodFillMaze(path, map, rows, cols, start, target))
 	{
-		/* assumes that free() can be used with node data */
+		while (path->front)
+			free(dequeue(path));
 		queue_delete(path);
 		return (NULL);
 	}
