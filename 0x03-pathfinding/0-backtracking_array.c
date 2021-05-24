@@ -99,7 +99,7 @@ int isValidStep(queue_t *path, char **map, int rows, int cols,
 
 	/* step out of map boundaries? */
 	if (!((step->x >= 0 && step->x < cols) &&
-	      (step->y >= 0 && step->x < rows)))
+	      (step->y >= 0 && step->y < rows)))
 		return (0);
 
 	/* step into wall? */
