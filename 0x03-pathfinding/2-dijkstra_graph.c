@@ -177,8 +177,8 @@ int dijkstraGraph(dijkstra_vertex_t *d_queue, size_t nb_vertices,
 		return (1);
 
 	dq_head = d_queue[dq_head_i];
-	printf("Checking %s, distance from Seattle is %lu\n",
-	       dq_head.vertex->content, dq_head.cml_weight);
+	printf("Checking %s, distance from %s is %lu\n",
+	       dq_head.vertex->content, start->content, dq_head.cml_weight);
 
 	assessEdges(d_queue, nb_vertices, dq_head_i);
 
