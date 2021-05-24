@@ -165,15 +165,16 @@ void assessEdges(dijkstra_vertex_t *d_queue, size_t nb_vertices,
   *   queue; any indexes lower than this in the array have finished assessment
   * @target_i: once assessment of the graph is complete and the target is
   *   found, this is updated to the final index of the target vertex in d_queue
+  * Return: 0 on success, 1 on failure or if target not found
   */
-void dijkstraGraph(dijkstra_vertex_t *d_queue, size_t nb_vertices,
+int dijkstraGraph(dijkstra_vertex_t *d_queue, size_t nb_vertices,
 		   const vertex_t *start, const vertex_t *target,
 		   size_t dq_head_i, size_t *target_i)
 {
 	dijkstra_vertex_t dq_head;
 
 	if (!d_queue || !start || !target || !target_i)
-		return;
+		return (1);
 
 	dq_head = d_queue[dq_head_i];
 	printf("Checking %s, distance from Seattle is %lu\n",
@@ -184,14 +185,20 @@ void dijkstraGraph(dijkstra_vertex_t *d_queue, size_t nb_vertices,
 	if (strcmp(target->content, dq_head.vertex->content) == 0)
 	{
 		*target_i = dq_head_i;
-		return;
+		return (0);
 	}
 
+	/* no more to assess */
 	if (dq_head_i == nb_vertices - 1)
-		return;
+		return (1);
 
-	dijkstraGraph(d_queue, nb_vertices, start, target,
-		      dq_head_i + 1, target_i);
+	/* no more viable paths remain */
+	if (d_queue[dq_head_i + 1].cml_weight == ULONG_MAX ||
+	    d_queue[dq_head_i + 1].path_via == NULL)
+		return (1);
+
+	return (dijkstraGraph(d_queue, nb_vertices, start, target,
+			     dq_head_i + 1, target_i));
 }
 
 
@@ -237,12 +244,15 @@ queue_t *dijkstra_graph(graph_t *graph, vertex_t const *start,
 	qsort((void *)dijkstra_queue, graph->nb_vertices,
 	      sizeof(dijkstra_vertex_t), compareWeights);
 
-	dijkstraGraph(dijkstra_queue, graph->nb_vertices,
-		      start, target, 0, &target_i);
+	if (dijkstraGraph(dijkstra_queue, graph->nb_vertices,
+			  start, target, 0, &target_i) != 0)
+	{
+		free(dijkstra_queue);
+		return (NULL);
+	}
 
 	/* assemble path backwards from dijkstra_queue */
 	path = pathFromDijkstraQueue(dijkstra_queue, target_i);
-
 	free(dijkstra_queue);
 	return (path);
 }
