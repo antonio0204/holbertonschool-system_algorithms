@@ -49,12 +49,13 @@ typedef struct bit_s
  *
  * @huff_id: "\177HUF": similar to the ELF magic number, used as file type
  *   identifier
- * @hc_byte_offset: byte index in compressed file of start of Huffman coded
- *   content; header stored in indices lower than this
- * @hc_first_bit_i: bit index in hc_byte_offset of start of Huffman coded
- *   content; header stored in indices lower than this
- * @hc_last_bit_i: last bit index in final byte of file that contains Huffman
- *   coded content; prevents misinterpretation of trailing 0 bits
+ * @hc_byte_offset: compressed file byte index of start of encoded content;
+ *   header and serialized Huffman Tree stored in indices lower than this
+ * @hc_first_bit_i: bit index in byte at hc_byte_offset of start of encoded
+ *   content; header and serialized Huffman Tree stored in indices lower than
+ *   this
+ * @hc_last_bit_i: last bit index in final byte of file that contains encoded
+ *   content; prevents misinterpretation of trailing 0 bits
  */
 typedef struct huffman_header_s
 {
