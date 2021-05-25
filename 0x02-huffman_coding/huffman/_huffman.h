@@ -10,7 +10,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#define BUF_SIZE 1000
+#define BUF_SIZE 4096
 /* 128 for ASCII text; 256 allows for extended ASCII or any byte sequence */
 #define CHAR_RANGE 256
 
