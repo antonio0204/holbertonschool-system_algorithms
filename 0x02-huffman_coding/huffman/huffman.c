@@ -70,6 +70,12 @@ FILE *openOutputFile(char *output_path)
 {
 	FILE *out_file = NULL;
 
+	if (access(out_file, F_OK) == 0)
+	{
+		printf("File already exists: %s\n", output_path);
+		return (NULL);
+	}
+
 	out_file = fopen(output_path, "w");
 	if (!out_file)
 		perror("openOutputfile: fopen");
