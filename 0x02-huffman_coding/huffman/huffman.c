@@ -70,7 +70,7 @@ FILE *openOutputFile(char *output_path)
 {
 	FILE *out_file = NULL;
 
-	if (access(out_file, F_OK) == 0)
+	if (access(output_path, F_OK) == 0)
 	{
 		printf("File already exists: %s\n", output_path);
 		return (NULL);
