@@ -147,6 +147,8 @@ void assessEdges(dijkstra_vertex_t *d_queue, size_t nb_vertices,
 		}
 	}
 
+	dq_head_i++;
+
 	qsort((void *)(d_queue + dq_head_i), nb_vertices - dq_head_i,
 	      sizeof(dijkstra_vertex_t), compareWeights);
 }

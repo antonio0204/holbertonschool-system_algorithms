@@ -151,6 +151,8 @@ void assessEdges(a_star_vertex_t *as_queue, size_t nb_vertices,
 		}
 	}
 
+	asq_head_i++;
+
 	qsort((void *)(as_queue + asq_head_i), nb_vertices - asq_head_i,
 	      sizeof(a_star_vertex_t), compareWeightPlusHeuristic);
 }
