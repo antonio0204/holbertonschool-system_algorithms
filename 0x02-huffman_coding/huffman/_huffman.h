@@ -14,44 +14,56 @@
 /* 128 for ASCII text; 256 allows for extended ASCII or any byte sequence */
 #define CHAR_RANGE 256
 
+
 /**
- * struct bit_s - TBD
+ * struct bit_s - struct to keep track of index positions for bit-granular
+ *   read/write operations
  *
- * @byte_dix: TBD
- * @byte: TBD
- * @bit_idx: TBD
+ * @byte_idx: index of local byte in file/buffer
+ * @byte: contents of local byte
+ * @bit_idx: index of bit in byte, from left/MSB
  */
-typedef struct bit_s {
+typedef struct bit_s
+{
 	size_t byte_idx;
 	unsigned char byte;
 	unsigned int bit_idx;
 } bit_t;
 
-/* pads out to 12 bytes if not `__attribute__((packed))` */
-/* maybe short int for offset byte? serialized tree can't be that big for non-Unicode */
 /*
-typedef struct huffman_header_s {
-	unsigned char huff_id[4];
-	unsigned int hc_byte_offset;
-	unsigned char hc_first_bit_i;
-	unsigned char hc_last_bit_i;
-} __attribute__((packed)) huffman_header_t;
-*/
+ * pads out to 12 bytes if not `__attribute__((packed))`
+ * offset byte can be short int: serialized tree not that big for non-Unicode
+ *
+ *typedef struct huffman_header_s
+ *{
+ *	unsigned char huff_id[4];
+ *	unsigned int hc_byte_offset;
+ *	unsigned char hc_first_bit_i;
+ *	unsigned char hc_last_bit_i;
+ *} __attribute__((packed)) huffman_header_t;
+ */
 
 /**
- * struct huffman_header_s - TBD
+ * struct huffman_header_s - contains header information encoded into start of
+ *   compressed file
  *
- * @huff_id: TBD
- * @hc_byte_offset: TBD
- * @hc_first_bit_i: TBD
- * @hc_last_bit_i: TBD
+ * @huff_id: "\177HUF": similar to the ELF magic number, used as file type
+ *   identifier
+ * @hc_byte_offset: byte index in compressed file of start of Huffman coded
+ *   content; header stored in indices lower than this
+ * @hc_first_bit_i: bit index in hc_byte_offset of start of Huffman coded
+ *   content; header stored in indices lower than this
+ * @hc_last_bit_i: last bit index in final byte of file that contains Huffman
+ *   coded content; prevents misinterpretation of trailing 0 bits
  */
-typedef struct huffman_header_s {
+typedef struct huffman_header_s
+{
 	unsigned char huff_id[4];
 	unsigned short int hc_byte_offset;
 	unsigned char hc_first_bit_i;
 	unsigned char hc_last_bit_i;
 } huffman_header_t;
+
 
 /* huffman.c */
 FILE *openInputFile(char *input_path, struct stat *st);
