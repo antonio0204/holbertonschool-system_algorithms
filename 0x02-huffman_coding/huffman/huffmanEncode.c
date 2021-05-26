@@ -42,7 +42,7 @@ void freeCodes(char **codes, size_t freq_size)
  * @r_buff: read buffer
  * @read_size: amount of bytes in read buffer to process
  * @w_buff: write buffer
- * @w_bit: struct containing indicies of current byte and bit in write buffer,
+ * @w_bit: struct containing indices of current byte and bit in write buffer,
  *    for bit-granular writing
  * Return: 0 on success, 1 on failure
  */
@@ -144,7 +144,7 @@ void buildHuffmanCodes(binary_tree_node_t *h_tree, size_t depth,
  * @freq_size: count of unqiue byte values appearing in input file, and thus
  *   amount of frequency values
  * @w_buff: write buffer
- * @w_bit: struct containing indicies of current byte and bit in write buffer,
+ * @w_bit: struct containing indices of current byte and bit in write buffer,
  *     for bit-granular writing
  * Return: 0 on success, 1 on failure
  */

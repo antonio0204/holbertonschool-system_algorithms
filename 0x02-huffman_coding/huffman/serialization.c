@@ -13,7 +13,7 @@
  *
  * @h_tree: head of Huffman tree (min binary heap of symbol frequencies)
  * @w_buff: write buffer
- * @w_bit: struct containing indicies of current byte and bit in write buffer,
+ * @w_bit: struct containing indices of current byte and bit in write buffer,
  *     for bit-granular writing
  */
 void huffmanSerialize(binary_tree_node_t *h_tree,
@@ -42,7 +42,7 @@ void huffmanSerialize(binary_tree_node_t *h_tree,
  *   compressed file and recursively reconstructs the tree data structure
  *
  * @r_buff: read buffer
- * @r_bit: struct containing indicies of current byte and bit in read buffer,
+ * @r_bit: struct containing indices of current byte and bit in read buffer,
  *     for bit-granular reading
  * @parent: parent tree node from previous frame of recursion
  * Return: new tree node, or NULL on failure

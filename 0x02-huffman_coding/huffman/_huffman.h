@@ -95,8 +95,8 @@ int huffmanEncode(FILE *in_file, binary_tree_node_t *h_tree, size_t freq_size,
 /* huffmanDecode.c */
 char *decodeSingleChar(binary_tree_node_t *h_tree,
 		       unsigned char *r_buff, bit_t *r_bit);
-int huffmanDecode(FILE *out_file, binary_tree_node_t *h_tree,
-		  huffman_header_t *header, size_t in_file_size,
+int huffmanDecode(FILE *out_file, huffman_header_t *header,
+		  binary_tree_node_t *h_tree, size_t in_file_size,
 		  unsigned char *r_buff, bit_t *r_bit);
 
 /* serialization.c */

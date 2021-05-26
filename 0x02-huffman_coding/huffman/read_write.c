@@ -6,7 +6,7 @@
  * readBit - read a single 0 or 1 bit from the current byte in the read buffer
  *
  * @r_buff: read buffer
- * @r_bit: struct containing indicies of current byte and bit in read buffer,
+ * @r_bit: struct containing indices of current byte and bit in read buffer,
  *     for bit-granular reading
  * @value: modified by reference; 0 or 1 value read from bit
  * Return: 0 on success, 1 on failure
@@ -39,7 +39,7 @@ int readBit(unsigned char *r_buff, bit_t *r_bit, unsigned char *value)
  *   operation, setting value to `byte`
  *
  * @r_buff: read buffer
- * @r_bit: struct containing indicies of current byte and bit in read buffer,
+ * @r_bit: struct containing indices of current byte and bit in read buffer,
  *     for bit-granular reading
  * @byte: modified by reference to contain byte read
  * Return: 0 on success, 1 on failure
@@ -71,7 +71,7 @@ int readByte(unsigned char *r_buff, bit_t *r_bit, unsigned char *byte)
  * writeBit - write a single 0 or 1 bit to the current byte in the write buffer
  *
  * @w_buff: write buffer
- * @w_bit: struct containing indicies of current byte and bit in write buffer,
+ * @w_bit: struct containing indices of current byte and bit in write buffer,
  *     for bit-granular writing
  * @toggle: 0 or 1 value to write to bit
  * Return: 0 on success, 1 on failure
@@ -103,7 +103,7 @@ int writeBit(unsigned char *w_buff, bit_t *w_bit, unsigned char toggle)
  *   in one operation
  *
  * @w_buff: write buffer
- * @w_bit: struct containing indicies of current byte and bit in write buffer,
+ * @w_bit: struct containing indices of current byte and bit in write buffer,
  *     for bit-granular writing
  * @byte: value to write bit by bit
  * Return: 0 on success, 1 on failure
@@ -133,7 +133,7 @@ int writeByte(unsigned char *w_buff, bit_t *w_bit, unsigned char byte)
  *   to the buffer; remaining bits set to 0
  *
  * @w_buff: write buffer
- * @w_bit: struct containing indicies of current byte and bit in write buffer,
+ * @w_bit: struct containing indices of current byte and bit in write buffer,
  *     for bit-granular writing
  * Return: 0 on success, 1 on failure
  */

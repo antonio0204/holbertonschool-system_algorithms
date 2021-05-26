@@ -10,12 +10,15 @@
 
 
 /**
- * decodeSingleChar - TBD
+ * decodeSingleChar - recurses down a Huffman tree based on bits read from an
+ *   encoded file, ending in the tree leaf designated for a given symbol
  *
- * @h_tree: TBD
- * @r_buff: TBD
- * @w_bit: TBD
- * Return: TBD
+ * @h_tree: Huffman tree to interpret Huffman code read from buffer
+ * @r_buff: read buffer
+ * @r_bit: struct containing indices of current byte and bit in read buffer,
+ *     for bit-granular reading
+ * Return: pointer to byte decoded from last read Huffman code,
+ *   or NULL on failure
  */
 char *decodeSingleChar(binary_tree_node_t *h_tree,
 		       unsigned char *r_buff, bit_t *r_bit)
@@ -39,35 +42,35 @@ char *decodeSingleChar(binary_tree_node_t *h_tree,
 
 
 /**
- * huffmanDecode - TBD
+ * huffmanDecode - transcodes bits from read buffer using a reconstituted
+ *   Huffman tree into bytes which are used for buffered writing to the output
+ *   file
  *
- * @out_file: TBD
- * @h_tree: TBD
- * @header: TBD
- * @input_file_size: TBD
- * @r_buff: TBD
- * @r_bit: TBD
- * Return: TBD
+ * @out_file: output file stream
+ * @header: header read from input file, containing start and stop indexes for
+ *   encoded data
+ * @h_tree: Huffman tree extracted from serialization in input file
+ * @in_file_size: input file size, in bytes
+ * @r_buff: read buffer
+ * @r_bit: struct containing indices of current byte and bit in read buffer,
+ *     for bit-granular reading
+ * Return: 0 on success, 1 on failure
  */
-int huffmanDecode(FILE *out_file, binary_tree_node_t *h_tree,
-		  huffman_header_t *header, size_t in_file_size,
+int huffmanDecode(FILE *out_file, huffman_header_t *header,
+		  binary_tree_node_t *h_tree, size_t in_file_size,
 		  unsigned char *r_buff, bit_t *r_bit)
 {
 	unsigned char w_buff[BUF_SIZE] = {0};
 	char *c = NULL;
 	size_t i = 0, size_minus_header, read_bytes;
 
-	if (!out_file || !h_tree || !header || !r_buff || !r_bit)
+	if (!out_file || !h_tree || !header || r_buff == NULL || !r_bit)
+		return (1);
+	if (r_bit->byte_idx != header->hc_byte_offset -
+	    sizeof(huffman_header_t))
 		return (1);
 
-	size_minus_header = in_file_size - sizeof(*header);
-
-	printf("huffmanDecode: size_minus_header:%lu header->hc_last_bit_i:%u header->hc_byte_offset:%u header->hc_first_bit_i:%u\n",
-	       size_minus_header, header->hc_last_bit_i, header->hc_byte_offset, header->hc_first_bit_i);
-
-	printf("huffmanDecode: r_bit->byte_idx:%lu r_bit->bit_idx:%u\n",
-	       r_bit->byte_idx, r_bit->bit_idx);
-
+	size_minus_header = in_file_size - sizeof(huffman_header_t);
 	while (r_bit->byte_idx < size_minus_header - 1 ||
 	       (r_bit->byte_idx == size_minus_header - 1 &&
 		r_bit->bit_idx < header->hc_last_bit_i))
@@ -81,29 +84,19 @@ int huffmanDecode(FILE *out_file, binary_tree_node_t *h_tree,
 
 		if (i == BUF_SIZE)
 		{
-			printf("huffmanDecode: writing and refreshing buffer\n");
-
 			if (fwrite(w_buff, sizeof(unsigned char),
 				   BUF_SIZE, out_file) != BUF_SIZE)
 				return (1);
-
 			i = 0;
 			memset(w_buff, 0, BUF_SIZE);
 		}
 	}
-	printf("huffmanDecode: i after decode loop: %lu\n", i);
-
-
-	/* file bytes % BUF_SIZE */
-	if (i != BUF_SIZE)
+	if (i != BUF_SIZE) /* file bytes % BUF_SIZE */
 	{
-	        read_bytes = fwrite(w_buff, sizeof(unsigned char),
+		read_bytes = fwrite(w_buff, sizeof(unsigned char),
 				    i, out_file);
-		printf("huffmanDecode: last read read_bytes: %lu\n", read_bytes);
-
 		if (read_bytes != i)
 			return (1);
 	}
-
 	return (0);
 }
