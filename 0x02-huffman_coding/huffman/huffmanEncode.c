@@ -10,13 +10,15 @@
 
 
 /**
- * freeCodes - TBD
+ * freeCodes - frees memory allocated for Huffman code array
  *
- * @codes: TBD
- * @freq_size: TBD
+ * @codes: array for Huffman codes; index 0 contains symbol, remainder of
+ *   string is code
+ * @freq_size: count of unqiue byte values appearing in input file, and thus
+ *   amount of frequency values
  */
 void freeCodes(char **codes, size_t freq_size)
- {
+{
 	size_t i;
 
 	if (codes == NULL)
@@ -30,12 +32,19 @@ void freeCodes(char **codes, size_t freq_size)
 
 
 /**
- * encodeText - TBD
+ * encodeText - uses array of Huffman codes to transcode bytes from the read
+ *   buffer to bits in the write buffer
  *
- * @codes: TBD
- * @freq_size: TBD
- * @buff: TBD
- * @w_bit: TBD
+ * @codes: array for Huffman codes; index 0 contains symbol, remainder of
+ *   string is code
+ * @freq_size: count of unqiue byte values appearing in input file, and thus
+ *   amount of frequency values
+ * @r_buff: read buffer
+ * @read_size: amount of bytes in read buffer to process
+ * @w_buff: write buffer
+ * @w_bit: struct containing indices of current byte and bit in write buffer,
+ *    for bit-granular writing
+ * Return: 0 on success, 1 on failure
  */
 int encodeText(char **codes, size_t freq_size, unsigned char *r_buff,
 	       size_t read_size, unsigned char *w_buff, bit_t *w_bit)
@@ -43,21 +52,10 @@ int encodeText(char **codes, size_t freq_size, unsigned char *r_buff,
 	size_t i, j, k;
 	char *code = NULL;
 	int code_found;
-/*
-	static size_t ii;
-*/
+
 	if (!codes || !r_buff || !w_buff || !w_bit)
 		return (1);
-/*
-	if (ii == 0)
-	{
-		printf("encodeText: after writing tree: w_bit->byte_idx:%lu w_bit->bit_idx:%u\n",
-		       w_bit->byte_idx, w_bit->bit_idx);
 
-		printf("w_buff[w_bit->byte_idx]:%x\n", w_buff[w_bit->byte_idx]);
-	}
-	ii++;
-*/
 	for (i = 0; i < read_size; i++)
 	{
 		code_found = 0;
@@ -89,12 +87,17 @@ int encodeText(char **codes, size_t freq_size, unsigned char *r_buff,
 
 
 /**
- * buildHuffmanCodes - TBD
+ * buildHuffmanCodes - recursively traverses a Huffman Tree to derive the
+ *   Huffman codes for symbols at each leaf
  *
- * @h_tree: TBD
- * @depth: TBD
- * @code: TBD
- * @codes: TBD
+ * @h_tree: head of Huffman tree (min binary heap of byte value frequencies)
+ * @depth: current level of Huffman tree, and by implication recursion frame
+ * @i: modified by reference, current index in `codes`
+ * @code: array populated during pre-order recursion with 0 for branching left
+ *   and 1 for branching right; the state of this string when the recursion
+ *   reaches a leaf determines the Huffman code for that leaf's symbol; first
+ *   position in array contains symbol
+ * @codes: array of finished Huffman codes
  */
 void buildHuffmanCodes(binary_tree_node_t *h_tree, size_t depth,
 		       size_t *i, char *code, char **codes)
@@ -127,17 +130,23 @@ void buildHuffmanCodes(binary_tree_node_t *h_tree, size_t depth,
 		return;
 	}
 
-        buildHuffmanCodes(h_tree->left, depth + 1, i, code, codes);
-        buildHuffmanCodes(h_tree->right, depth + 1, i, code, codes);
+	buildHuffmanCodes(h_tree->left, depth + 1, i, code, codes);
+	buildHuffmanCodes(h_tree->right, depth + 1, i, code, codes);
 }
 
 
 /**
- * huffmanEncode - TBD
+ * huffmanEncode - derives Huffman codes from a Huffman tree and uses them to
+ *   write the encoded data to a write buffer
  *
- * @h_tree: TBD
- * @buff: TBD
- * @w_bit: TBD
+ * @in_file: input file stream
+ * @h_tree: head of Huffman tree (min binary heap of byte value frequencies)
+ * @freq_size: count of unqiue byte values appearing in input file, and thus
+ *   amount of frequency values
+ * @w_buff: write buffer
+ * @w_bit: struct containing indices of current byte and bit in write buffer,
+ *     for bit-granular writing
+ * Return: 0 on success, 1 on failure
  */
 int huffmanEncode(FILE *in_file, binary_tree_node_t *h_tree, size_t freq_size,
 		  unsigned char *w_buff, bit_t *w_bit)
@@ -168,15 +177,9 @@ int huffmanEncode(FILE *in_file, binary_tree_node_t *h_tree, size_t freq_size,
 		return (1);
 	}
 
-	printf("\thuffman codes:\n");
-	for (i = 0; i < freq_size; i++)
-		printf("\tcodes[%lu]: %s\n", i, codes[i]);
-
-	/* need buffer overrun solution */
+	/* currently only supports files up to BUF_SIZE bytes */
 	read_bytes = fread(r_buff, sizeof(unsigned char),
 			   BUF_SIZE, in_file);
-
-	printf("\thuffmanEncode: read_bytes from text input:%lu\n", read_bytes);
 
 	if (encodeText(codes, freq_size, r_buff, read_bytes,
 		       w_buff, w_bit) == 1)

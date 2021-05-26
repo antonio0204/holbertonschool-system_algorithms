@@ -12,11 +12,11 @@
 
 
 /**
- * openInputFile - TBD
+ * openInputFile - opens input file stream
  *
- * @input_path: TBD
- * @st: TBD
- * Return: TBD
+ * @input_path: output file path from command line
+ * @st: stat struct to populate with file profile
+ * Return: input file stream, or NULL on failure
  */
 FILE *openInputFile(char *input_path, struct stat *st)
 {
@@ -37,7 +37,7 @@ FILE *openInputFile(char *input_path, struct stat *st)
 			       input_path);
 			break;
 		default:
-		        printf("Cannot access file: %s", input_path);
+			printf("Cannot access file: %s", input_path);
 			break;
 		}
 		return (NULL);
@@ -53,7 +53,7 @@ FILE *openInputFile(char *input_path, struct stat *st)
 	if (!in_file)
 	{
 		perror("openInputfile: fopen");
-		errno == 0;
+		errno = 0;
 	}
 
 	return (in_file);
@@ -61,10 +61,10 @@ FILE *openInputFile(char *input_path, struct stat *st)
 
 
 /**
- * openOutputFile - TBD
+ * openOutputFile - opens output file stream if file does not already exist
  *
- * @output_path: TBD
- * Return: TBD
+ * @output_path: output file path from command line
+ * Return: output file stream, or NULL on failure
  */
 FILE *openOutputFile(char *output_path)
 {
@@ -84,14 +84,13 @@ FILE *openOutputFile(char *output_path)
 }
 
 
-/* no need for envp? locale should have no impact on sorting ASCII */
-/* do we need to handle Unicode? */
 /**
- * main - entry point to `huffman`
+ * main - entry point to `huffman`; project task does not expect student to
+ *   handle Unicode, and so LC_ALL and envp are not needed
  *
- * @argc: TBD
- * @argv: TBD
- * Return: TBD
+ * @argc: count of command_line arguments
+ * @argv: array of command_line arguments
+ * Return: 0 on success, 1 on failure
  */
 int main(int argc, char *argv[])
 {

@@ -1,6 +1,8 @@
 #include "_huffman.h"
 /* binary_tree_node_t */
 #include "heap.h"
+/* freeSymbol huffman_tree */
+#include "huffman.h"
 /* malloc */
 #include <stdlib.h>
 /* fread feof fclose */
@@ -8,39 +10,16 @@
 /* memset */
 #include <string.h>
 
-/* symbol_t */
-#include "huffman.h"
-
-void binary_tree_print(const binary_tree_node_t *heap, int (*print_data)(char *, void *));
 
 /**
- * symbol_print - Prints a symbol structure
+ * tallyFrequencies - reads input file to tally amount of appearances of each
+ *   byte value from 0 to CHAR_RANGE; in the resulting array, the value at each
+ *   index represents the amount of appearances of the byte value equal to that
+ *   index
  *
- * @buffer: Buffer to print into
- * @data: Pointer to a node's data
- *
- * Return: Number of bytes written in buffer
- */
-int symbol_print(char *buffer, void *data)
-{
-    symbol_t *symbol;
-    char c;
-    int length;
-
-    symbol = (symbol_t *)data;
-    c = symbol->data;
-    if (c == -1)
-        c = '$';
-    length = sprintf(buffer, "(%c/%lu)", c, symbol->freq);
-    return (length);
-}
-
-
-/**
- * tallyFrequencies - TBD
- *
- * @in_file: TBD
- * Return: TBD
+ * @in_file: input file stream
+ * @in_file_size: input file size in bytes
+ * Return: array of frequencies, or NULL on failure
  */
 size_t *tallyFrequencies(FILE *in_file, size_t in_file_size)
 {
@@ -57,11 +36,9 @@ size_t *tallyFrequencies(FILE *in_file, size_t in_file_size)
 	memset(freqs, 0, sizeof(size_t) * CHAR_RANGE);
 
 	remainder = in_file_size % BUF_SIZE;
-        do {
+	do {
 		read_bytes = fread(r_buff, sizeof(unsigned char),
 				   BUF_SIZE, in_file);
-
-		printf("\ttallyFrequencies: read_bytes from text input:%lu\n", read_bytes);
 
 		if (!(read_bytes == BUF_SIZE || read_bytes == remainder))
 		{
@@ -86,15 +63,20 @@ size_t *tallyFrequencies(FILE *in_file, size_t in_file_size)
 }
 
 
-/* build inputs to match existing huffman_tree() prototype */
 /**
- * prepareTreeInputs - TBD
+ * prepareTreeInputs - translates array returned by tallyFrequencies into the
+ *   two arrays expected by huffman_tree: one of byte values, one of byte
+ *   frequencies
  *
- * @freqs: TBD
- * @data: TBD
- * @freq: TBD
- * @freq_size: TBD
- * Return: TBD
+ * @freqs: size_t array with the value at each index representing the frequency
+ *   in the imput file of the byte value equal to that index
+ * @data: char array modified by reference; byte values appearing in the input
+ *   file
+ * @freq: size_t array modified by reference; byte value frequencies in the
+ *   input file
+ * @freq_size: pointer to size_t containing count of unqiue byte values
+ *   appearing in input file
+ * Return: 0 on success, 1 on failure
  */
 int prepareTreeInputs(size_t *freqs, char **data,
 		      size_t **freq, size_t *freq_size)
@@ -134,19 +116,21 @@ int prepareTreeInputs(size_t *freqs, char **data,
 
 
 /**
- * prepareTreeInputs - TBD
+ * huffmanTreeFromText - tallies frequencies of byte values appearing in the
+ *   input file, and creates a Huffman Tree data structure, or a min binary
+ *   heap sorted by frequency
  *
- * @freqs: TBD
- * @data: TBD
- * @freq: TBD
- * @freq_size: TBD
- * Return: TBD
+ * @in_file: input file stream
+ * @freq_size: pointer to size_t to contain count of unqiue byte values
+ *   appearing in input file, and thus amount of frequency values
+ * @in_file_size: input file size in bytes
+ * Return: head of a binary tree structured as a Huffman Tree, or NULL on
+ *   failure
  */
 binary_tree_node_t *huffmanTreeFromText(FILE *in_file, size_t *freq_size,
 					size_t in_file_size)
 {
 	size_t *freqs = NULL, *freq = NULL;
-	size_t i;
 	char *data = NULL;
 	binary_tree_node_t *h_tree = NULL;
 
@@ -164,16 +148,6 @@ binary_tree_node_t *huffmanTreeFromText(FILE *in_file, size_t *freq_size,
 	}
 	free(freqs);
 
-	for (i = 0; i < *freq_size; i++)
-	{
-		if (data[i] < ' ' || data[i] > '~')
-			printf("\ti:%lu data:%x freq:%lu", i, data[i], freq[i]);
-		else
-			printf("\ti:%lu data:'%c' freq:%lu", i, data[i], freq[i]);
-		if (i % 2)
-			putchar('\n');
-	}
-
 	h_tree = huffman_tree(data, freq, *freq_size);
 
 	free(data);
@@ -183,12 +157,20 @@ binary_tree_node_t *huffmanTreeFromText(FILE *in_file, size_t *freq_size,
 }
 
 
+
+/*
+ * Note: max possible leaves in tree 256 (frequecies for 00-ff byte values,) so
+ * serialized tree not likely more than roughly 2*256 bytes in output file
+ */
 /**
- * huffmanCompress - TBD
+ * huffmanCompress - compresses input file text via Huffman Coding, and writes
+ *   to an output file a custom file header, the serialized Huffman Tree, and
+ *   the encoded content
  *
- * @in_file: TBD
- * @out_file: TBD
- * Return: TBD
+ * @in_file: input file stream
+ * @out_file: output file stream
+ * @in_file_size: input file size in bytes
+ * Return: 0 on success, 1 on failure
  */
 int huffmanCompress(FILE *in_file, FILE *out_file, long int in_file_size)
 {
@@ -205,45 +187,31 @@ int huffmanCompress(FILE *in_file, FILE *out_file, long int in_file_size)
 				     (size_t)in_file_size);
 	if (!h_tree)
 		return (1);
-
-	binary_tree_print(h_tree, symbol_print);
-
 	huffmanSerialize(h_tree, w_buff, &w_bit);
-	/* max leaves in tree 256, serialized tree not likely to be more than roughly 2 * 256 bytes */
-	/* if partial byte reamins, write to last byte in buffer */
 	if (writePartialByte(w_buff, &w_bit) == 1)
 	{
 		binaryTreeDelete(h_tree, freeSymbol);
 		return (1);
 	}
 
-	printf("huffmanCompress: after writing tree: w_bit.byte_idx:%lu w_bit.bit_idx:%u\n",
-	       w_bit.byte_idx, w_bit.bit_idx);
-
-	printf("w_buff[w_bit.byte_idx]:%x\n", w_buff[w_bit.byte_idx]);
-
 	/* huffman code starts at bit after serialized tree */
 	header.hc_byte_offset = sizeof(huffman_header_t) + w_bit.byte_idx;
-        header.hc_first_bit_i = w_bit.bit_idx;
-
+	header.hc_first_bit_i = w_bit.bit_idx;
 	if (huffmanEncode(in_file, h_tree, freq_size, w_buff, &w_bit) == 1 ||
 	    writePartialByte(w_buff, &w_bit) == 1)
 	{
 		binaryTreeDelete(h_tree, freeSymbol);
 		return (1);
 	}
-
-        header.hc_last_bit_i = w_bit.bit_idx;
+	header.hc_last_bit_i = w_bit.bit_idx;
 	binaryTreeDelete(h_tree, freeSymbol);
 
 	/* write header to file */
-        if (fwrite(&header, sizeof(huffman_header_t), 1, out_file) != 1)
+	if (fwrite(&header, sizeof(huffman_header_t), 1, out_file) != 1)
 		return (1);
-
-	/* write serialized tree and encoded teto file */
-        if (fwrite(w_buff, sizeof(unsigned char), w_bit.byte_idx + 1,
+	/* write serialized tree and encoded content to file */
+	if (fwrite(w_buff, sizeof(unsigned char), w_bit.byte_idx + 1,
 		   out_file) != w_bit.byte_idx + 1)
 		return (1);
-
 	return (0);
 }

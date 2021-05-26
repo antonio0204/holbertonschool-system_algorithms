@@ -9,56 +9,29 @@
 #include <string.h>
 
 
-void binary_tree_print(const binary_tree_node_t *heap, int (*print_data)(char *, void *));
-
-/**
- * char_print - prints a char
- *
- * @buffer: Buffer to print into
- * @data: Pointer to a node's data
- *
- * Return: TBD
- */
-int char_print(char *buffer, void *data)
-{
-    char c;
-    int length;
-
-    if (data == NULL)
-	    length = sprintf(buffer, "($)");
-    else
-    {
-	    c = *((char *)data);
-
-	    if (c < ' ' || c > '~')
-		    length = sprintf(buffer, "(%o)", c);
-	    else
-		    length = sprintf(buffer, "('%c')", c);
-    }
-
-    return (length);
-}
-
-
 /**
  * freeChar - meant to be used as free_data parameter to heap_delete or
  *   binaryTreeDelete; frees memory allocated for a char
  *
- * @data: void pointer intended to be cast into data pointer
+ * @data: void pointer intended to be cast into char *
  */
 void freeChar(void *data)
 {
-        if (data)
-                free((char *)data);
+	if (data)
+		free((char *)data);
 }
 
 
+/* currently only supporting input files of less than BUF_SIZE bytes */
 /**
- * huffmanDecompress - TBD
+ * huffmanDecompress - reads input file to reconstruct the Huffman tree used
+ *   during encoding, and then uses this tree to decode the remaining bits
+ *   back into the original bytes of the source file before compression
  *
- * @in_file: TBD
- * @out_file: TBD
- * Return: TBD
+ * @in_file: intput file stream
+ * @out_file: output file stream
+ * @in_file_size: input file size, in bytes
+ * Return: 0 on success, 1 on failure
  */
 int huffmanDecompress(FILE *in_file, FILE *out_file, long int in_file_size)
 {
@@ -74,24 +47,25 @@ int huffmanDecompress(FILE *in_file, FILE *out_file, long int in_file_size)
 	if (fread(&header, sizeof(huffman_header_t), 1, in_file) != 1)
 		return (1);
 
+	/* check custom "magic" file identifier */
 	if (strncmp((char *)(header.huff_id), "\177HUF", 4) != 0)
 	{
 		printf("Input is not a file compressed by this program!\n");
 		return (1);
 	}
 
-	/* serialized trees should be <= 2 * CHAR_RANGE, and < BUF_SIZE */
+	/* serialized trees should be <= 2*CHAR_RANGE bytes in file */
 	read_bytes = fread(r_buff, sizeof(unsigned char),
 			   BUF_SIZE, in_file);
-	printf("\tread_bytes from compressed file:%lu\n", read_bytes);
+	/* currently only supporting input files of less than BUF_SIZE bytes */
+	if (read_bytes != in_file_size - sizeof(huffman_header_t))
+		return (1);
 
 	h_tree = huffmanDeserialize(r_buff, &r_bit, NULL);
 	if (!h_tree)
 		return (1);
 
-	binary_tree_print(h_tree, char_print);
-
-	if (huffmanDecode(out_file, h_tree, &header, (size_t)in_file_size,
+	if (huffmanDecode(out_file, &header, h_tree, (size_t)in_file_size,
 			  r_buff, &r_bit) == 1)
 	{
 		binaryTreeDelete(h_tree, freeChar);

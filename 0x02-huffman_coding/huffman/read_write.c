@@ -1,20 +1,22 @@
 #include "_huffman.h"
 
 
+
 /**
- * readBit - TBD
+ * readBit - read a single 0 or 1 bit from the current byte in the read buffer
  *
- * @buff: TBD
- * @r_bit: TBD
- * @value: TBD
- * Return: TBD
+ * @r_buff: read buffer
+ * @r_bit: struct containing indices of current byte and bit in read buffer,
+ *     for bit-granular reading
+ * @value: modified by reference; 0 or 1 value read from bit
+ * Return: 0 on success, 1 on failure
  */
-int readBit(unsigned char *buff, bit_t *r_bit, unsigned char *value)
+int readBit(unsigned char *r_buff, bit_t *r_bit, unsigned char *value)
 {
-	if (!buff || !r_bit || !value)
+	if (!r_buff || !r_bit || !value)
 		return (1);
 
-	r_bit->byte = buff[r_bit->byte_idx];
+	r_bit->byte = r_buff[r_bit->byte_idx];
 
 	if (r_bit->byte & (1 << (7 - r_bit->bit_idx)))
 		*value = 1;
@@ -33,30 +35,32 @@ int readBit(unsigned char *buff, bit_t *r_bit, unsigned char *value)
 
 
 /**
- * readByte - TBD
+ * readByte - reads all 8 bits in r_bit byte from the read buffer in one
+ *   operation, setting value to `byte`
  *
- * @buff: TBD
- * @r_bit: TBD
- * @byte: TBD
- * Return: TBD
+ * @r_buff: read buffer
+ * @r_bit: struct containing indices of current byte and bit in read buffer,
+ *     for bit-granular reading
+ * @byte: modified by reference to contain byte read
+ * Return: 0 on success, 1 on failure
  */
-int readByte(unsigned char *buff, bit_t *r_bit, unsigned char *byte)
+int readByte(unsigned char *r_buff, bit_t *r_bit, unsigned char *byte)
 {
 	size_t i;
 	unsigned char bit_value;
 
-	if (!buff || !r_bit || !byte)
+	if (!r_buff || !r_bit || !byte)
 		return (1);
 
 	for (i = 0; i < 8; i++)
 	{
-		if (readBit(buff, r_bit, &bit_value) == 1)
+		if (readBit(r_buff, r_bit, &bit_value) == 1)
 			return (1);
 
 		if (bit_value)
 			*byte |= (1 << (7 - i));
 		else
-		        *byte &= ~(1 << (7 - i));
+			*byte &= ~(1 << (7 - i));
 	}
 
 	return (0);
@@ -64,16 +68,17 @@ int readByte(unsigned char *buff, bit_t *r_bit, unsigned char *byte)
 
 
 /**
- * writeBit - TBD
+ * writeBit - write a single 0 or 1 bit to the current byte in the write buffer
  *
- * @buff: TBD
- * @w_bit: TBD
- * @toggle: TBD
- * Return: TBD
+ * @w_buff: write buffer
+ * @w_bit: struct containing indices of current byte and bit in write buffer,
+ *     for bit-granular writing
+ * @toggle: 0 or 1 value to write to bit
+ * Return: 0 on success, 1 on failure
  */
-int writeBit(unsigned char *buff, bit_t *w_bit, unsigned char toggle)
+int writeBit(unsigned char *w_buff, bit_t *w_bit, unsigned char toggle)
 {
-	if (!buff || !w_bit || (toggle != 0 && toggle != 1))
+	if (!w_buff || !w_bit || (toggle != 0 && toggle != 1))
 		return (1);
 
 	if (toggle)
@@ -82,14 +87,10 @@ int writeBit(unsigned char *buff, bit_t *w_bit, unsigned char toggle)
 		w_bit->byte &= ~(1 << (7 - w_bit->bit_idx));
 	w_bit->bit_idx++;
 
-	/* zeroing out byte buffer on reset should be dependent on writeByte vs writePartialByte*/
 	if (w_bit->bit_idx == 8)
 	{
-		buff[w_bit->byte_idx] = w_bit->byte;
+		w_buff[w_bit->byte_idx] = w_bit->byte;
 		w_bit->byte_idx++;
-/*
-		w_bit->byte = 0;
-*/
 		w_bit->bit_idx = 0;
 	}
 
@@ -98,69 +99,68 @@ int writeBit(unsigned char *buff, bit_t *w_bit, unsigned char toggle)
 
 
 /**
- * writeByte - TBD
+ * writeByte - writes all 8 bits from `byte` individually to the write buffer
+ *   in one operation
  *
- * @buff: TBD
- * @w_bit: TBD
- * @byte: TBD
- * Return: TBD
+ * @w_buff: write buffer
+ * @w_bit: struct containing indices of current byte and bit in write buffer,
+ *     for bit-granular writing
+ * @byte: value to write bit by bit
+ * Return: 0 on success, 1 on failure
  */
-int writeByte(unsigned char *buff, bit_t *w_bit, unsigned char byte)
+int writeByte(unsigned char *w_buff, bit_t *w_bit, unsigned char byte)
 {
 	size_t i;
 
-	if (!buff || !w_bit)
+	if (w_buff == NULL || !w_bit)
 		return (1);
-/*
-	if ((char)byte < ' ' || (char)byte > '~')
-	        printf("writeByte: %#x\n", (char)byte);
-	else
-	        printf("writeByte: '%c'\n", (char)byte);
-*/
+
 	for (i = 0; i < 8; i++)
 	{
-		if (writeBit(buff, w_bit,
+		if (writeBit(w_buff, w_bit,
 			     (byte & (1 << (7 - i))) ? 1 : 0) == 1)
 			return (1);
 	}
-/*
-	printf("writeByte exit: w_bit byte_idx:%lu bit_idx:%u\n", w_bit->byte_idx, w_bit->bit_idx);
-*/
+
 	return (0);
 }
 
 
 /**
- * writePartialByte - TBD
+ * writePartialByte - a "flush" of the current byte in the w_bit struct to the
+ *   corresponding byte in the write buffer, for those cases when the main
+ *   write operation is finished and there are less than 8 bits left to write
+ *   to the buffer; remaining bits set to 0
  *
- * @buff: TBD
- * @w_bit: TBD
- * Return: TBD
+ * @w_buff: write buffer
+ * @w_bit: struct containing indices of current byte and bit in write buffer,
+ *     for bit-granular writing
+ * Return: 0 on success, 1 on failure
  */
-int writePartialByte(unsigned char *buff, bit_t *w_bit)
+int writePartialByte(unsigned char *w_buff, bit_t *w_bit)
 {
 	unsigned int orig_bit_i;
 	size_t i;
 
-	if (!buff || !w_bit)
+	if (w_buff == NULL || !w_bit)
 		return (1);
 
 	if (w_bit->bit_idx != 0)
 	{
-		/* zero out any bits in byte buffer beyond current bit_idx */
+		/* zero out any bits in w_bit->byte beyond current bit_idx */
 		for (i = w_bit->bit_idx; i < 8; i++)
 			w_bit->byte &= ~(1 << (7 - i));
 
 		orig_bit_i = w_bit->bit_idx;
 		w_bit->bit_idx = 0;
-		/* zero-padded by unassigned bits to left */
-		writeByte(buff, w_bit, w_bit->byte);
+
+		/* write whole byte, zero-padded by unassigned bits to left */
+		writeByte(w_buff, w_bit, w_bit->byte);
+
 		/* reset to original values */
 		w_bit->bit_idx = orig_bit_i;
 		w_bit->byte_idx -= 1;
 	}
-
-	printf("\twritePartialByte exit: w_bit byte_idx:%lu bit_idx:%u\n", w_bit->byte_idx, w_bit->bit_idx);
 
 	return (0);
 }
