@@ -8,7 +8,7 @@
  * symbolCompare - compares the frequency of two symbols
  *
  * @p1: void * expected to castable to symbol_t *
- * @p1: void * expected to castable to symbol_t *
+ * @p2: void * expected to castable to symbol_t *
  * Return: Positive if frequency 1 is greater, 0 if same values, or negative if
  *   frequency 2 is greater
  */
@@ -33,7 +33,7 @@ int symbolCompare(void *p1, void *p2)
  *
  * @p1: void * expected to castable to binary_tree_node_t * containing data
  *   castable to symbol_t *
- * @p1: void * expected to castable to binary_tree_node_t * containing data
+ * @p2: void * expected to castable to binary_tree_node_t * containing data
  *   castable to symbol_t *
  * Return: Positive if frequency 1 is greater, 0 if same values, or negative if
  *   frequency 2 is greater
