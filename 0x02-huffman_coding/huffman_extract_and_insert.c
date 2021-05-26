@@ -6,11 +6,12 @@
 #include <stdio.h>
 
 /**
- * huffmanSumNode - TBD
+ * huffmanSumNode - sums frequencies of two symbols stored in two extracted
+ *    nodes, and creates a new node to contain the sum
  *
- * @ex_node1: TBD
- * @ex_node2: TBD
- * Return: TBD
+ * @ex_node1: first nested node extracted from priority queue
+ * @ex_node2: second nested node extracted from priority queue
+ * Return: new node containing sum of frequencies, or NULL on failure
  */
 binary_tree_node_t *huffmanSumNode(binary_tree_node_t *ex_node1,
 				   binary_tree_node_t *ex_node2)
@@ -51,9 +52,10 @@ binary_tree_node_t *huffmanSumNode(binary_tree_node_t *ex_node1,
  *
  *     Two nodes are extracted from the queue, and then one is inserted. The
  *   new queue node contains a new nested node, with a frequency value the sum
- *   of the two extraced nodes' frequencies. The two extracted nodes are then
- *   linked to the new nested as its children. By iterating this process a
- *   Huffman tree is constructed among the nested nodes.
+ *   of the two extraced nodes' frequencies. The nodes nested in the two
+ *   extracted nodes are then linked to the new nested as its children. By
+ *   iterating this process a Huffman tree is constructed among the nested
+ *   nodes.
  *
  * @priority_queue: pointer to Min Binary Heap which acts as a priority queue
  *   by representing nodes used in construction of a Huffman tree

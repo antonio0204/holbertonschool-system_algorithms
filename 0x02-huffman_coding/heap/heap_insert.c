@@ -158,8 +158,8 @@ binary_tree_node_t *minHeapSiftUp(binary_tree_node_t *new,
 /**
  * heapInsert - inserts a value into a Min Binary Beap
  *
- * @root: TBD
- * @data_cmp: TBD
+ * @root: pointer to Min Binary Heap root node
+ * @data_cmp: data comparsion function pointer
  * @data: pointer containing data to store in the inserted node
  * Return: pointer to the inserted node, or NULL on failure
  */

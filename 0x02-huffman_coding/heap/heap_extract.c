@@ -108,12 +108,12 @@ binary_tree_node_t *lastInLevelOrder(binary_tree_node_t *root)
 
 /**
  * minHeapSiftDown - Intended for use after swapping the data in the root and
- *   last level order nodes of a Binary Heap in preparation for extraction.
+ *   last level order node of a Binary Heap in preparation for extraction.
  *   Restores Min Binary Heap properties of a tree by sifting swapped data
  *   down from root position.
  *
- * @root: TBD
- * @data_cmp: TBD
+ * @root: pointer to Min Binary Heap root node
+ * @data_cmp: data comparsion function pointer
  */
 void minHeapSiftDown(binary_tree_node_t *root,
 		     int (data_cmp)(void *, void *))
@@ -158,8 +158,8 @@ void minHeapSiftDown(binary_tree_node_t *root,
  * heapExtract - extacts the value at the root of a Min Binary Heap, expects
  *   heap to already be a complete binary tree
  *
- * @root: TBD
- * @data_cmp: TBD
+ * @root: pointer to Min Binary Heap root node
+ * @data_cmp: data comparsion function pointer
  * Return: pointer to data from root node of binary heap
  */
 void *heapExtract(binary_tree_node_t **root,

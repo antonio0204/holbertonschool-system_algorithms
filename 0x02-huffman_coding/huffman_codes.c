@@ -7,17 +7,18 @@
 
 
 /**
- * printAllHuffmanCodes - TBD
+ * printAllHuffmanCodes - recursively traverses a Huffman tree to print the
+ *   Huffman code for the symbol (byte value) at each leaf
  *
- * @tree: TBD
- * @depth: TBD
- * @data: TBD
- * @freq: TBD
- * @data_sz: TBD
- * @h_code: TBD
+ * @tree: root node of Huffman tree
+ * @depth: level of tree, or implicitly the frame of recursion
+ * @data: array of byte values
+ * @freq: array of corresponding frequencies for the byte values in `data`
+ * @size: amount of members in both `data` and `freq`
+ * @h_code: array holding partially built Huffman code
  */
 void printAllHuffmanCodes(binary_tree_node_t *tree, size_t depth,
-			  char *data, size_t *freq, size_t data_sz,
+			  char *data, size_t *freq, size_t size,
 			  char *h_code)
 {
 	symbol_t *symbol = NULL;
@@ -30,7 +31,7 @@ void printAllHuffmanCodes(binary_tree_node_t *tree, size_t depth,
 		h_code[depth - 1] = (tree == tree->parent->left) ? '0' : '1';
 
 	symbol = (symbol_t *)(tree->data);
-	for (i = 0; i < data_sz; i++)
+	for (i = 0; i < size; i++)
 	{
 		if (symbol->data == data[i] && symbol->freq == freq[i])
 		{
@@ -40,20 +41,23 @@ void printAllHuffmanCodes(binary_tree_node_t *tree, size_t depth,
 	}
 
 	printAllHuffmanCodes(tree->left, depth + 1,
-			     data, freq, data_sz, h_code);
+			     data, freq, size, h_code);
 	printAllHuffmanCodes(tree->right, depth + 1,
-			     data, freq, data_sz, h_code);
+			     data, freq, size, h_code);
 }
 
 
 /**
- * deriveHuffmanCode - TBD
+ * deriveHuffmanCode - builds a Huffamn code for a single symbol by recusively
+ *   traversing a Huffman tree
  *
- * @tree: TBD
- * @data: TBD
- * @freq: TBD
- * @depth: TBD
- * Return: TBD
+ * @tree: Huffman tree, or Min Binary Heap of symbols sorted by frequency
+ * @data: symbol (byte value) to encode
+ * @freq: amount of appearances in source file that `data` byte appears, value
+ *   that orders Huffman tree
+ * @depth: current level of tree, and implicitly frame of recursion
+ * Return: string containing bit values of Huffman code as '1's and '0's, or
+ *   NULL on failure
  */
 char *deriveHuffmanCode(binary_tree_node_t *tree,
 			char data, size_t freq, size_t depth)
@@ -100,12 +104,13 @@ char *deriveHuffmanCode(binary_tree_node_t *tree,
 
 
 /**
- * huffman_codes - TBD
+ * huffman_codes - builds a Huffman tree and prints the resulting Huffman codes
+ *   for each symbol
  *
- * @data: TBD
- * @freq: TBD
- * @size: TBD
- * Return: TBD
+ * @data: array of byte values
+ * @freq: array of corresponding frequencies for the byte values in `data`
+ * @size: amount of members in both `data` and `freq`
+ * Return: 1 on success, 0 on failure
  */
 int huffman_codes(char *data, size_t *freq, size_t size)
 {
