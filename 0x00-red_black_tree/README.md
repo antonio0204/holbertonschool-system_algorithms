@@ -13,10 +13,10 @@ Alexandre Gautier
 Introduction to Red-Black Trees: how they differ from other types of Binary Trees, and how to implement tree validation and node insertion/deletion based on their properties. 
 
 ### Provided file(s)
-`binary_tree_print.c`\
-`rb_tree_print.c`\
-`rb_trees.h` (only definitions of `rb_color_t` and `rb_tree_t`)\
-`heap.h` (only definition of `binary_tree_node_t`)
+[`binary_tree_print.c`](./binary_tree_print.c)\
+[`rb_tree_print.c`](./rb_tree_print.c)\
+[`rb_trees.h`](./rb_trees.h) (only definitions of `rb_color_t` and `rb_tree_t`)\
+[`heap.h`](./heap.h) (only definition of `binary_tree_node_t`)
 
 ---
 
@@ -60,7 +60,7 @@ Write a function that inserts a value in a Red-Black Tree
 * The resulting tree after insertion, must be a Red-Black Tree
 * You are allowed to have up to 7 functions in your file
 
-Files: [`2-rb_tree_insert.c`](./2-rb_tree_insert.c)\
+File(s): [`2-rb_tree_insert.c`](./2-rb_tree_insert.c)\
 Compiled: `gcc -Wall -Wextra -Werror -pedantic 2-main.c 0-rb_tree_node.c 2-rb_tree_insert.c rb_tree_print.c -o rb_tree_insert`
 
 
@@ -73,7 +73,7 @@ Write a function that builds a Binary Search Tree from an array
 * Your function must return a pointer to the root node of the created R-B tree, or `NULL` on failure
 * If a value in the array is already present in the tree, this value must be ignored
 
-Files: [`3-array_to_rb_tree.c`](./3-array_to_rb_tree.c)\
+File(s): [`3-array_to_rb_tree.c`](./3-array_to_rb_tree.c)\
 Compiled: `gcc -Wall -Wextra -Werror -pedantic 3-main.c 0-rb_tree_node.c 2-rb_tree_insert.c 3-array_to_rb_tree.c rb_tree_print.c -o rb_tree_array`
 
 
@@ -87,7 +87,7 @@ Write a function that removes a node from a Red-Black tree
 * The resulting tree must be a valid Red-Black tree
 * You’re allowed to have up to 7 functions in your file
 
-Files: [`4-rb_tree_remove.c`](./4-rb_tree_remove.c) [`0-rb_tree_node.c`](./0-rb_tree_node.c)
+File(s): [`4-rb_tree_remove.c`](./4-rb_tree_remove.c) [`0-rb_tree_node.c`](./0-rb_tree_node.c)
 
 
 ### :white_check_mark: 5. Big O Red-Black Tree
@@ -97,4 +97,4 @@ What are the average time complexities of the below operations for a Red-Black T
 2. Removing a node from a Red-Black Tree of size n
 3. Searching for a node in a Red-Black Tree of size n
 
-File: [`5-O`](./5-O)
+File(s): [`5-O`](./5-O)
