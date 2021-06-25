@@ -22,7 +22,7 @@ Introduction to Red-Black Trees: how they differ from other types of Binary Tree
 
 ## Mandatory Tasks
 
-### 0. Red-Black - New node [X]
+### :white_check_mark: 0. Red-Black - New node
 Write a function that creates a Red-Black Tree node
 
 * Prototype: `rb_tree_t *rb_tree_node(rb_tree_t *parent, int value, rb_color_t color);`
@@ -36,7 +36,7 @@ File(s): [`0-rb_tree_node.c`](./0-rb_tree_node.c)\
 Compiled: `gcc -Wall -Wextra -Werror -pedantic 0-main.c 0-rb_tree_node.c rb_tree_print.c -o rb_tree_node`
 
 
-### 1. Red-Black - Is Red-Black [X]
+### :white_check_mark: 1. Red-Black - Is Red-Black
 Write a function that checks if a binary tree is a valid Red-Black Tree
 
 * Prototype: `int rb_tree_is_valid(const rb_tree_t *tree);`
@@ -48,7 +48,7 @@ File(s): [`1-rb_tree_is_valid.c`](./1-rb_tree_is_valid.c)\
 Compiled: `gcc -Wall -Wextra -Werror -pedantic 1-main.c 1-rb_tree_is_valid.c 0-rb_tree_node.c rb_tree_print.c -o rb_tree_valid`
 
 
-### 2. Red-Black - Insert [X]
+### :white_check_mark: 2. Red-Black - Insert
 Write a function that inserts a value in a Red-Black Tree
 
 * Prototype: `rb_tree_t *rb_tree_insert(rb_tree_t **tree, int value);`
@@ -64,7 +64,7 @@ Files: [`2-rb_tree_insert.c`](./2-rb_tree_insert.c)\
 Compiled: `gcc -Wall -Wextra -Werror -pedantic 2-main.c 0-rb_tree_node.c 2-rb_tree_insert.c rb_tree_print.c -o rb_tree_insert`
 
 
-### 3. Red-Black - Array to R-B Tree [X]
+### :white_check_mark: 3. Red-Black - Array to R-B Tree
 Write a function that builds a Binary Search Tree from an array
 
 * Prototype: `rb_tree_t *array_to_rb_tree(int *array, size_t size);`
@@ -77,7 +77,7 @@ Files: [`3-array_to_rb_tree.c`](./3-array_to_rb_tree.c)\
 Compiled: `gcc -Wall -Wextra -Werror -pedantic 3-main.c 0-rb_tree_node.c 2-rb_tree_insert.c 3-array_to_rb_tree.c rb_tree_print.c -o rb_tree_array`
 
 
-### 4. Red-Black - Remove []
+### :white_large_square: 4. Red-Black - Remove
 Write a function that removes a node from a Red-Black tree
 
 * Prototype: `rb_tree_t *rb_tree_remove(rb_tree_t *root, int n);`
@@ -90,7 +90,7 @@ Write a function that removes a node from a Red-Black tree
 Files: [`4-rb_tree_remove.c`](./4-rb_tree_remove.c) [`0-rb_tree_node.c`](./0-rb_tree_node.c)
 
 
-### 5. Big O Red-Black Tree [X]
+### :white_check_mark: 5. Big O Red-Black Tree
 What are the average time complexities of the below operations for a Red-Black Tree (one answer per line):
 
 1. Inserting a node in a Red-Black Tree of size n
