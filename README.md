@@ -21,14 +21,20 @@ Algorithm component of the Holberton school "Low-Level and Algorithms" specializ
 
 ---
 
-### [0x00. C - Red-Black trees](./0x00-red_black_tree/)
+### [(378) 0x00. C - Red-Black trees](./0x00-red_black_tree/)
 Introduction to Red-Black Trees: how they differ from other types of Binary Trees, and how to implement tree validation and node insertion/deletion based on their properties. 
 
-### [0x01. C - Graphs](./0x01-graphs/)
+### [(392) 0x01. C - Graphs](./0x01-graphs/)
+Introduction to Graph Theory: what are vertices and edges, different types of graphs (directed, weighted, etc.), the most common ways of representing graphs in C, and DFS versus BFS traversal.
 
-### [0x02. C - Huffman coding](./0x02-huffman_coding/)
+### [(286) 0x02. C - Huffman coding](./0x02-huffman_coding/)
+A review of Min/Max Binary Heaps, plus an introduction to priority queues, Huffman Trees, and Huffman Coding, in service of building a file compression application.
 
-### [0x03. C - Pathfinding](./0x03-pathfinding/)
+### [(410) 0x03. C - Pathfinding](./0x03-pathfinding/)
+Introduction to Pathfinding: its most common applications, backtracking as a class of solutions and how it can be less desireable in graph traversal, Dijkstra’s algorithm and its main weakness, finally the A* algorithm, and its improvements over Dijkstra’s.
+
+### [(196) 0x04. C - N-ary trees](./0x04-nary_trees/)
+(project in progress)
 
 ---
 

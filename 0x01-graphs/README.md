@@ -100,3 +100,8 @@ Write a function that goes through a graph using the breadth-first algorithm.
 
 File(s): [`5-breadth_first_traverse.c`](./5-breadth_first_traverse.c)\
 Compiled: `gcc -Wall -Wextra -Werror -pedantic 5-main.c 0-graph_create.c 1-graph_add_vertex.c 2-graph_add_edge.c 3-graph_delete.c 5-breadth_first_traverse.c graph_display.c -o 5-breadth_first_traverse`
+
+---
+
+## Student
+* **Samuel Pomeroy** - [allelomorph](github.com/allelomorph)

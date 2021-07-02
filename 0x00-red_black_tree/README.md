@@ -99,3 +99,8 @@ What are the average time complexities of the below operations for a Red-Black T
 3. Searching for a node in a Red-Black Tree of size n
 
 File(s): [`5-O`](./5-O)
+
+---
+
+## Student
+* **Samuel Pomeroy** - [allelomorph](github.com/allelomorph)

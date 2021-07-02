@@ -186,3 +186,8 @@ Usage: `./huffman <mode> <filename> <out_filename>`, where:
 
 File(s): [`huffman/*`](./huffman/)\
 Compiled: `cd huffman/ && make all`
+
+---
+
+## Student
+* **Samuel Pomeroy** - [allelomorph](github.com/allelomorph)
