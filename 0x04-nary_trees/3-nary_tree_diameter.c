@@ -6,13 +6,13 @@
 #include <stdio.h>
 
 
-
 /**
- * _nary_tree_diameter - finds the first and second maximum depths of
- *   descendant nodes of a given node in an N-ary tree
+ * _nary_tree_diameter - finds the diameter of an N-ary tree via DFS and
+ *   bottom up dynamic programming
  *
  * @root: pointer to the root node of the tree to measure
  * @depth: depth of recursion frame, or current `root` from true root
+ * @diameter: pointer to current maximum diameter, modified by reference
  *
  * Return: pointer to struct with first and second max depths of descendant
  *   nodes, or NULL on failure
@@ -20,18 +20,13 @@
 size_t _nary_tree_diameter(nary_tree_t const *root, size_t depth,
 					size_t *diameter)
 {
-        size_t *child_depths = NULL, i, max_depth_1, max_depth_2,
-		node_diam/*, max_1_i*/;
+	size_t *child_depths = NULL, i, max_depth_1, max_depth_2, node_diam;
 	nary_tree_t *temp;
 
-	if (!root)
-		return (0);
-
 	if (!diameter)
-	{
 		fprintf(stderr, "_nary_tree_diameter: NULL diameter\n");
+	if (!root || !diameter)
 		return (0);
-	}
 
 	max_depth_1 = max_depth_2 = depth;
 	if (root->nb_children)
@@ -49,21 +44,6 @@ size_t _nary_tree_diameter(nary_tree_t const *root, size_t depth,
 			child_depths[i] = _nary_tree_diameter(temp, depth + 1,
 							      diameter);
 
-/*
-		for (i = 0; i < root->nb_children; i++)
-		{
-			if (child_depths[i] > max_depth_1)
-			{
-				max_depth_1 = child_depths[i];
-				max_1_i = i;
-			}
-		}
-
-		for (i = 0; i < root->nb_children; i++)
-			if (child_depths[i] > max_depth_2 && i != max_1_i)
-				max_depth_2 = child_depths[i];
-*/
-
 		for (i = 0; i < root->nb_children; i++)
 		{
 			if (child_depths[i] > max_depth_1)
@@ -72,25 +52,12 @@ size_t _nary_tree_diameter(nary_tree_t const *root, size_t depth,
 				max_depth_2 = child_depths[i];
 		}
 
-/*
 		free(child_depths);
-*/
 	}
 
-
-        node_diam = (max_depth_1 - depth) + (max_depth_2 - depth) + 1;
+	node_diam = (max_depth_1 - depth) + (max_depth_2 - depth) + 1;
 	if (node_diam > *diameter)
 		*diameter = node_diam;
-
-	printf("node @ %p: content:'%s' nb_children: %lu depth:%lu\n", (void *)root, root->content, root->nb_children, depth);
-	for (i = 0; i < root->nb_children; i++)
-		printf("\t\tchild_depths[%lu]: %lu\n", i, child_depths[i]);
-
-	printf("\tmax_depth_1:%lu max_depth_2:%lu\n", max_depth_1, max_depth_2);
-	printf("\tlocal diameter:%lu\n", node_diam);
-
-	if (child_depths)
-		free(child_depths);
 
 	return (max_depth_1);
 }
@@ -107,8 +74,7 @@ size_t nary_tree_diameter(nary_tree_t const *root)
 {
 	size_t diameter = 0;
 
-	if (root)
-		_nary_tree_diameter(root, 0, &diameter);
+	_nary_tree_diameter(root, 0, &diameter);
 
 	return (diameter);
 }
