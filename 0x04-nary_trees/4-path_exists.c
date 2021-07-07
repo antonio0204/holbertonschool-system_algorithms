@@ -30,7 +30,7 @@ int _path_exists(nary_tree_t const *root, char const * const *path,
 		return (0);
 	}
 
-	/* no NULL protection against SIGSEGV on glibc strncmp or strlen */
+	/* no segfault protection in glibc strncmp or strlen for NULL inputs */
 	if (strncmp(root->content, path[path_i],
 		    strlen(root->content) + 1) != 0)
 		return (0);
@@ -62,7 +62,7 @@ int _path_exists(nary_tree_t const *root, char const * const *path,
  */
 int path_exists(nary_tree_t const *root, char const * const *path)
 {
-	if (!root || !path)
+	if (!root || !path || !path[0])
 		return (0);
 
 	return (_path_exists(root, path, 0));
