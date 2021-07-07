@@ -18,7 +18,7 @@
  *   nodes, or NULL on failure
  */
 size_t _nary_tree_diameter(nary_tree_t const *root, size_t depth,
-					size_t *diameter)
+			   size_t *diameter)
 {
 	size_t *child_depths = NULL, i, max_depth_1, max_depth_2, node_diam;
 	nary_tree_t *temp;
@@ -34,7 +34,8 @@ size_t _nary_tree_diameter(nary_tree_t const *root, size_t depth,
 		child_depths = malloc(sizeof(size_t) * root->nb_children);
 		if (!child_depths)
 		{
-			fprintf(stderr, "_nary_tree_diameter: NULL diameter\n");
+			fprintf(stderr,
+				"_nary_tree_diameter: malloc failure\n");
 			return (0);
 		}
 
@@ -58,7 +59,6 @@ size_t _nary_tree_diameter(nary_tree_t const *root, size_t depth,
 	node_diam = (max_depth_1 - depth) + (max_depth_2 - depth) + 1;
 	if (node_diam > *diameter)
 		*diameter = node_diam;
-
 	return (max_depth_1);
 }
 
