@@ -18,6 +18,7 @@ Algorithm component of the Holberton school "Low-Level and Algorithms" specializ
 ### Other
 * Unless mentioned otherwise, no more than 5 functions per file
 * No more than 40 lines per function
+* Global variables not allowed for most projects
 
 ---
 
@@ -34,7 +35,7 @@ A review of Min/Max Binary Heaps, plus an introduction to priority queues, Huffm
 Introduction to Pathfinding: its most common applications, backtracking as a class of solutions and how it can be less desireable in graph traversal, Dijkstra’s algorithm and its main weakness, finally the A* algorithm, and its improvements over Dijkstra’s.
 
 ### [(196) 0x04. C - N-ary trees](./0x04-nary_trees/)
-(project in progress)
+Introduction to N-ary trees as an extension of previous Binary Tree concepts: node insertion, tree deletion and traversal, measuring the diameter of a tree, and pathfinding from the root node.
 
 ---
 
