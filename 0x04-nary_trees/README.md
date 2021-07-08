@@ -13,8 +13,8 @@ Alexandre Gautier
 Introduction to N-ary trees as an extension of previous Binary Tree concepts: node insertion, tree deletion and traversal, measuring the diameter of a tree, and pathfinding from the root node.
 
 ### Provided file(s) and data structures
-definition of `nary_tree_t` as appears in [`nary_trees.h`](./nary_trees.h)\
-[`0-main.c`](./tests/0-main.c) [`1-main.c`](./tests/1-main.c) [`2-main.c`](./tests/2-main.c) [`3-main.c`](./tests/3-main.c) [`4-main.c`](./tests/4-main.c)
+* definition of `nary_tree_t` for [`nary_trees.h`](./nary_trees.h)\
+* default test mains: [`0-main.c`](./tests/0-main.c) [`1-main.c`](./tests/1-main.c) [`2-main.c`](./tests/2-main.c) [`3-main.c`](./tests/3-main.c) [`4-main.c`](./tests/4-main.c)
 
 ---
 

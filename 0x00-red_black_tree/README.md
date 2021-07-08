@@ -13,11 +13,11 @@ Alexandre Gautier
 Introduction to Red-Black Trees: how they differ from other types of Binary Trees, and how to implement tree validation and node insertion/deletion based on their properties. 
 
 ### Provided file(s)
-[`binary_tree_print.c`](./binary_tree_print.c)\
-[`rb_tree_print.c`](./rb_tree_print.c)\
-[`rb_trees.h`](./rb_trees.h) (only definitions of `rb_color_t` and `rb_tree_t`)\
-[`heap.h`](./heap.h) (only definition of `binary_tree_node_t`)\
-[`0-main.c`](./tests/0-main.c) [`1-main.c`](./tests/1-main.c) [`2-main.c`](./tests/2-main.c) [`3-main.c`](./tests/3-main.c)
+* [`binary_tree_print.c`](./binary_tree_print.c)\
+* [`rb_tree_print.c`](./rb_tree_print.c)\
+* [`rb_trees.h`](./rb_trees.h) (only definitions of `rb_color_t` and `rb_tree_t`)\
+* [`heap.h`](./heap.h) (only definition of `binary_tree_node_t`)\
+* default test mains: [`0-main.c`](./tests/0-main.c) [`1-main.c`](./tests/1-main.c) [`2-main.c`](./tests/2-main.c) [`3-main.c`](./tests/3-main.c)
 
 ---
 

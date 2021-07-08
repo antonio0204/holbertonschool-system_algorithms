@@ -13,9 +13,9 @@ Alexandre Gautier
 Introduction to Graph Theory: what are vertices and edges, different types of graphs (directed, weighted, etc.), the most common ways of representing graphs in C, and DFS versus BFS traversal.
 
 ### Provided file(s)
-[`graph_display.c`](./graph_display.c)\
-definitions of `edge_type_t`, `edge_t`, `struct vertex_s`, and `graph_t` for [`graphs.h`](./graphs.h)\
-[`0-main.c`](./tests/0-main.c) [`1-main.c`](./tests/1-main.c) [`2-main.c`](./tests/2-main.c) [`3-main.c`](./tests/3-main.c) [`4-main.c`](./tests/4-main.c) [`5-main.c`](./tests/5-main.c)
+* [`graph_display.c`](./graph_display.c)\
+* definitions of `edge_type_t`, `edge_t`, `struct vertex_s`, and `graph_t` for [`graphs.h`](./graphs.h)\
+* default test mains: [`0-main.c`](./tests/0-main.c) [`1-main.c`](./tests/1-main.c) [`2-main.c`](./tests/2-main.c) [`3-main.c`](./tests/3-main.c) [`4-main.c`](./tests/4-main.c) [`5-main.c`](./tests/5-main.c)
 
 ---
 
