@@ -13,11 +13,11 @@ Alexandre Gautier
 Introduction to Pathfinding: its most common applications, backtracking as a class of solutions and how it can be less desireable in graph traversal, Dijkstra’s algorithm and its main weakness, finally the A* algorithm, and its improvements over Dijkstra’s.
 
 ### Provided file(s) and data structures
-* [`graphs.h`](./graphs.h)\
-* [`queues.h`](./queues.h)\
-* [`libgraphs.a`](./libgraphs.a)\
-* [`libqueues.a`](./libqueues.a)\
-* definition of `point_t` for [`pathfinding.h`](./pathfinding.h)\
+* [`graphs.h`](./graphs.h)
+* [`queues.h`](./queues.h)
+* [`libgraphs.a`](./libgraphs.a)
+* [`libqueues.a`](./libqueues.a)
+* definition of `point_t` for [`pathfinding.h`](./pathfinding.h)
 * default test mains: [`0-main.c`](./tests/0-main.c) [`1-main.c`](./tests/1-main.c) [`2-main.c`](./tests/2-main.c) [`2-main_1.c`](./tests/2-main_1.c) [`100-main.c`](./tests/100-main.c) [`100-main_1.c`](./tests/100-main_1.c)
 
 ---
