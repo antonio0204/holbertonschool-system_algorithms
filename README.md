@@ -1,10 +1,9 @@
 # holbertonschool-system_algorithms
 
-Algorithm component of the Holberton school "Low-Level and Algorithms" specialization curriculum. 
+## Description
+Data structures and algorithm component of the Holberton school "Low-Level and Algorithms" specialization curriculum. 
 
----
-
-## C project requirements
+## General C project requirements
 
 ### Compilation conditions
 * Ubuntu 14.04 LTS
@@ -14,11 +13,6 @@ Algorithm component of the Holberton school "Low-Level and Algorithms" specializ
 ### Linters
 * [betty-style](https://github.com/holbertonschool/Betty/blob/master/betty-style.pl)
 * [betty-doc](https://github.com/holbertonschool/Betty/blob/master/betty-doc.pl)
-
-### Other
-* Unless mentioned otherwise, no more than 5 functions per file
-* No more than 40 lines per function
-* Global variables not allowed for most projects
 
 ---
 
