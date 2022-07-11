@@ -103,4 +103,4 @@ File(s): [`5-O`](./5-O)
 ---
 
 ## Student
-* **Samuel Pomeroy** - [allelomorph](github.com/allelomorph)
+* **Ronal Aguirre Villalobos** - [ronald0204](https://github.com/ronald0204)
